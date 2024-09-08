@@ -1,3 +1,4 @@
+import 'package:e_market/details_page.dart';
 import 'package:e_market/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -10,8 +11,12 @@ class MyApp extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage()
+    return  MaterialApp(
+      theme: ThemeData(appBarTheme: const AppBarTheme(
+        titleTextStyle: TextStyle(color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold),
+        
+      )),
+      home: const ItemDetails()
     );
   }
 

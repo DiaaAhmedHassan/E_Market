@@ -1,0 +1,25 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+ios/Runner.xcworkspace/
+ios/Pods/
+android/.gradle/
+android/app/build/
+# IntelliJ related
+.idea/
+*.iml
+*.ipr
+*.iws
+# VS Code related
+.vscode/
+# Mac related
+*.DS_Store
+# Windows related
+Thumbs.db
+# Linux related
+*.directory

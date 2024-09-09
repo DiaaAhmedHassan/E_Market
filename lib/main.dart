@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget{
         titleTextStyle: TextStyle(color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold),
         
       )),
-      home: const ItemDetails()
+      home: const HomePage()
     );
   }
 

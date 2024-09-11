@@ -13,7 +13,7 @@ class _RegistrationState extends State<Registration> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("E market registeration"),
+        title: const Text("E market registration"),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -29,20 +29,16 @@ class _RegistrationState extends State<Registration> {
                         margin: const EdgeInsets.only(top: 20),
                         width: 135,
                         height: 135,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.blue),
+                        decoration:  BoxDecoration(
+                            shape: BoxShape.circle, color: Colors.blue[200]),
                         alignment: Alignment.center,
-                        child: Icon(
-                          Icons.person_add_alt_1,
-                          size: 100,
-                          color: Colors.grey[200],
-                        ),
+                        child: Image.asset("images/avatar.png")
                       ),
                     ),
                     MaterialButton(
                       onPressed: () {},
-                      child: const Text("Upload"),
                       textColor: Colors.black,
+                      child: const Text("Upload"),
                     )
                   ],
                 ),
@@ -98,9 +94,9 @@ class _RegistrationState extends State<Registration> {
               ),
               UserInputField(
                 hint: "pa####d",
-                prefix: Icon(Icons.lock_outline),
+                prefix: const Icon(Icons.lock_outline),
                 suffix:
-                    IconButton(onPressed: () {}, icon: Icon(Icons.visibility)),
+                    IconButton(onPressed: () {}, icon: const Icon(Icons.visibility)),
               ),
               const SizedBox(
                 height: 20,
@@ -114,9 +110,9 @@ class _RegistrationState extends State<Registration> {
               ),
               UserInputField(
                 hint: "pa####d",
-                prefix: Icon(Icons.lock),
+                prefix: const Icon(Icons.lock),
                 suffix:
-                    IconButton(onPressed: () {}, icon: Icon(Icons.visibility)),
+                    IconButton(onPressed: () {}, icon: const Icon(Icons.visibility)),
               ),
               const SizedBox(
                 height: 30,
@@ -127,24 +123,25 @@ class _RegistrationState extends State<Registration> {
                   child: MaterialButton(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       onPressed: () {},
-                      child: Text(
+                      color: Colors.blue,
+                      textColor: Colors.white,
+                      child: const Text(
                         "Register",
                         style: TextStyle(fontSize: 24),
-                      ),
-                      color: Colors.blue,
-                      textColor: Colors.white)),
-                      SizedBox(height: 20,),
+                      ))),
+                      const SizedBox(height: 20,),
                       Container(
                         alignment: Alignment.center,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                          Text("Already have an account? "),
+                          const Text("Already have an account? "),
                           InkWell(
                             onTap: (){
                               Navigator.of(context).pushNamedAndRemoveUntil('login_page', (Route<dynamic> route) => false);
                             },
-                            child: Text("Login here", style:TextStyle(color: Colors.blue, decoration: TextDecoration.underline ,decorationColor: Colors.blue),))
+                            child: const Text("Login here", style:TextStyle(color: Colors.blue, decoration: TextDecoration.underline ,decorationColor: Colors.blue, fontWeight: FontWeight.bold),)
+                            )
                         ],),
                       )
             ],

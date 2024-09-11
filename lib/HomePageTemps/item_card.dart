@@ -29,8 +29,8 @@ class ItemCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(itemName, style: const TextStyle(fontWeight: FontWeight.bold,),),
-                  Text("$price \$"),
+                  Flexible(child: Text(itemName, style: const TextStyle(fontWeight: FontWeight.bold,), overflow: TextOverflow.ellipsis,)),
+                  Flexible(child: Text("$price \$",)),
                   const SizedBox(height: 2,),
 
                   Row(children: [

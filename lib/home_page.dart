@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:e_market/HomePageTemps/category_icon.dart';
+
 import 'package:e_market/HomePageTemps/item_card.dart';
 import 'package:e_market/HomePageTemps/offer_banner.dart';
-import 'package:e_market/details_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {

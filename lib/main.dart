@@ -1,4 +1,6 @@
 import 'package:e_market/Auths/login_form.dart';
+import 'package:e_market/Auths/registration.dart';
+import 'package:e_market/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,7 +17,13 @@ class MyApp extends StatelessWidget{
         titleTextStyle: TextStyle(color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold),
         
       )),
-      home: const LogIn()
+      home: const LogIn(),
+
+      routes: {
+        "home_page": (route)=> const HomePage(),
+        "login_page": (route)=> const LogIn(),
+        "registration_page": (route)=> const Registration(),
+      },
     );
   }
 

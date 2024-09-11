@@ -137,11 +137,15 @@ class _LogInState extends State<LogIn> {
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 alignment: Alignment.center,
-                child: const Row(
+                child:  Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                   Text("Don't have an account yet "),
-                  Text("Register here", style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, decorationColor: Colors.blue, fontWeight: FontWeight.bold), )
+                  InkWell(
+                    onTap: (){
+                      Navigator.pushNamed(context, "registration_page");
+                    },
+                    child: Text("Register here", style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, decorationColor: Colors.blue, fontWeight: FontWeight.bold), ))
                 ],),
               )
             ],

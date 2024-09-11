@@ -15,18 +15,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List products = [
-    {"image": "images/1.png", "title": "Watch", "price": 25.0, "rating": 3, "description": "This is the very long description", "available amount": 800},
+    {"image": "images/1.png", "title": "Watch", "price": 25.0, "rating": 3},
     {
       "image": "images/2.png",
       "title": "head phone",
       "price": 30.0,
-      "rating": 4,
-      "description": "This is the very long description",
-      "available amount": 700
+      "rating": 4
     },
-    {"image": "images/3.png", "title": "Sneakers", "price": 15.0, "rating": 2, "description": "This is the very long description", "available amount": 1000},
-    {"image": "images/4.png", "title": "Hoodie", "price": 24.0, "rating": 5, "description": "This is the very long description", "available amount": 400},
-    {"image": "images/5.png", "title": "perfume", "price": 300.0, "rating": 3, "description": "This is the very long description", "available amount": 200},
+    {"image": "images/3.png", "title": "Sneakers", "price": 15.0, "rating": 2},
+    {"image": "images/4.png", "title": "Hoodie", "price": 24.0, "rating": 5},
+    {"image": "images/5.png", "title": "perfume", "price": 300.0, "rating": 3},
   ];
 
   List categories = [
@@ -228,17 +226,11 @@ class _HomePageState extends State<HomePage> {
                 mainAxisSpacing: 20),
               delegate: SliverChildBuilderDelegate(
                 (context, i) {
-                  return InkWell(
-                    onTap: (){
-                     print("=============$products=============");
-                     Navigator.push(context, MaterialPageRoute(builder: (context) => ItemDetails(data: products[i],)));
-                    },
-                    child: ItemCard(
-                        itemName: products[i]['title'],
-                        price: products[i]['price'],
-                        rating: products[i]['rating'],
-                        imagePath: products[i]['image']),
-                  );
+                  return ItemCard(
+                      itemName: products[i]['title'],
+                      price: products[i]['price'],
+                      rating: products[i]['rating'],
+                      imagePath: products[i]['image']);
                 },
                 childCount: products.length,
               ),

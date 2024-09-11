@@ -1,5 +1,4 @@
-import 'package:e_market/details_page.dart';
-import 'package:e_market/home_page.dart';
+import 'package:e_market/Authentication/login_form.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +15,7 @@ class MyApp extends StatelessWidget{
         titleTextStyle: TextStyle(color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold),
         
       )),
-      home: const HomePage()
+      home: const LogIn()
     );
   }
 

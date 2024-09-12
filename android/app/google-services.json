@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "895247117671",
+    "project_id": "e-market-cdf14",
+    "storage_bucket": "e-market-cdf14.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895247117671:android:18406a3688294989f493c2",
+        "android_client_info": {
+          "package_name": "com.example.e_market"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7kPCe9MfoCre55fpgXeINAferV_pipN4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,13 +2,30 @@ import 'package:e_market/Auths/input_fields.dart';
 import 'package:flutter/material.dart';
 
 class Registration extends StatefulWidget {
-  const Registration({super.key});
+  Registration({super.key});
+
+
 
   @override
   State<Registration> createState() => _RegistrationState();
 }
 
 class _RegistrationState extends State<Registration> {
+
+    bool isPasswordHidden = true;
+  bool isConfirmationHidden = true;
+
+  showAndHidePassword(){
+    setState(() {
+      isPasswordHidden = !isPasswordHidden;
+    });
+  }
+
+  showAndHideConfirmation(){
+    setState(() {
+      isConfirmationHidden = !isConfirmationHidden;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,9 +67,10 @@ class _RegistrationState extends State<Registration> {
               const SizedBox(
                 height: 10,
               ),
-              const UserInputField(
+               UserInputField(
+                secureText: false,
                 hint: "eg: Mohammed",
-                prefix: Icon(Icons.person),
+                prefix: const Icon(Icons.person),
               ),
               const SizedBox(
                 height: 20,
@@ -64,9 +82,10 @@ class _RegistrationState extends State<Registration> {
               const SizedBox(
                 height: 10,
               ),
-              const UserInputField(
+               UserInputField(
+                secureText: false,
                 hint: "eg: mohamed@gmail.com",
-                prefix: Icon(Icons.email),
+                prefix: const Icon(Icons.email),
               ),
               const SizedBox(
                 height: 20,
@@ -78,9 +97,10 @@ class _RegistrationState extends State<Registration> {
               const SizedBox(
                 height: 10,
               ),
-              const UserInputField(
+               UserInputField(
+                secureText: false,
                 hint: "0124*******",
-                prefix: Icon(Icons.email),
+                prefix: const Icon(Icons.email),
               ),
               const SizedBox(
                 height: 20,
@@ -93,10 +113,14 @@ class _RegistrationState extends State<Registration> {
                 height: 10,
               ),
               UserInputField(
+                secureText: isPasswordHidden,
                 hint: "pa####d",
                 prefix: const Icon(Icons.lock_outline),
                 suffix:
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.visibility)),
+                    IconButton(onPressed: () {
+                        showAndHidePassword();
+                      
+                    }, icon:  Icon(isPasswordHidden?Icons.visibility: Icons.visibility_off)),
               ),
               const SizedBox(
                 height: 20,
@@ -109,10 +133,14 @@ class _RegistrationState extends State<Registration> {
                 height: 10,
               ),
               UserInputField(
+                secureText:isConfirmationHidden,
                 hint: "pa####d",
                 prefix: const Icon(Icons.lock),
                 suffix:
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.visibility)),
+                    IconButton(onPressed: () {
+                        showAndHideConfirmation();
+                      
+                    }, icon:  Icon(isConfirmationHidden?Icons.visibility: Icons.visibility_off)),
               ),
               const SizedBox(
                 height: 30,

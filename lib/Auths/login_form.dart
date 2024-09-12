@@ -9,6 +9,15 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
+
+bool isPasswordHidden = true;
+
+  showAndHidePassword(){
+    setState(() {
+      isPasswordHidden = !isPasswordHidden;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,9 +59,10 @@ class _LogInState extends State<LogIn> {
               const SizedBox(
                 height: 10,
               ),
-              const UserInputField(
+               UserInputField(
                 hint: "eg. example@domain.com",
-                prefix: Icon(Icons.email),
+                prefix: const Icon(Icons.email),
+                secureText: false,
               ),
               const SizedBox(
                 height: 20,
@@ -67,11 +77,14 @@ class _LogInState extends State<LogIn> {
                 height: 10,
               ),
               UserInputField(
+                secureText: isPasswordHidden,
                 hint: "pa#@#rd",
                 prefix: const Icon(Icons.lock),
                 suffix: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.visibility_outlined)),
+                    onPressed: () {
+                      showAndHidePassword();
+                    },
+                    icon:  Icon(isPasswordHidden? Icons.visibility_outlined : Icons.visibility_off_outlined)),
               ),
               const SizedBox(
                 height: 10,
@@ -140,12 +153,12 @@ class _LogInState extends State<LogIn> {
                 child:  Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                  Text("Don't have an account yet "),
+                  const Text("Don't have an account yet "),
                   InkWell(
                     onTap: (){
                       Navigator.pushNamed(context, "registration_page");
                     },
-                    child: Text("Register here", style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, decorationColor: Colors.blue, fontWeight: FontWeight.bold), ))
+                    child: const Text("Register here", style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, decorationColor: Colors.blue, fontWeight: FontWeight.bold), ))
                 ],),
               )
             ],

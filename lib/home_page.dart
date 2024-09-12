@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:e_market/HomePageTemps/category_icon.dart';
 import 'package:e_market/HomePageTemps/item_card.dart';
 import 'package:e_market/HomePageTemps/offer_banner.dart';
+import 'package:e_market/details_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,16 +17,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List products = [
-    {"image": "images/1.png", "title": "Watch", "price": 25.0, "rating": 3},
+    {"image": "images/1.png", "title": "Watch", "price": 25.0, "rating": 3, "available amount": 300, "description": "Watch description"},
     {
       "image": "images/2.png",
       "title": "head phone",
       "price": 30.0,
-      "rating": 4
+      "rating": 4,
+      "available amount": 4000, "description": "Headphone description"
     },
-    {"image": "images/3.png", "title": "Sneakers", "price": 15.0, "rating": 2},
-    {"image": "images/4.png", "title": "Hoodie", "price": 24.0, "rating": 5},
-    {"image": "images/5.png", "title": "perfume", "price": 300.0, "rating": 3},
+    {"image": "images/3.png", "title": "Sneakers", "price": 15.0, "rating": 2, "available amount": 1000, "description": "sneakers description"},
+    {"image": "images/4.png", "title": "Hoodie", "price": 24.0, "rating": 5, "available amount": 2000, "description": "Hoodie description"},
+    {"image": "images/5.png", "title": "perfume", "price": 300.0, "rating": 3, "available amount": 6000, "description": "perfume description"},
   ];
 
   List categories = [
@@ -106,11 +109,20 @@ class _HomePageState extends State<HomePage> {
             children: [
               Row(
                 children: [
-                  Image.asset(
-                    "images/avatar.png",
-                    width: 100,
-                    height: 100,
+
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Image.asset(
+                      "images/avatar.png",
+                      width: 80,
+                      height: 80,
+                    ),
                   ),
+
                   const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -125,23 +137,37 @@ class _HomePageState extends State<HomePage> {
                   )
                 ],
               ),
+              const Divider(),
               Expanded(
-                  child: ListView(children: const [
+                  child: ListView(children:  [
                 ListTile(
-                  title: Text("Profile"),
-                  leading: Icon(Icons.person),
+                  onTap: (){
+
+                  },
+                  title: const Text("Profile"),
+                  leading: const Icon(Icons.person),
                 ),
                 ListTile(
-                  title: Text("Cart"),
-                  leading: Icon(Icons.shopping_cart),
+                  onTap: (){
+
+                  },
+                  title: const Text("Cart"),
+                  leading: const Icon(Icons.shopping_cart),
                 ),
                 ListTile(
-                  title: Text("Customer support"),
-                  leading: Icon(Icons.chat),
+                  onTap: (){
+
+                  },
+                  title: const Text("Customer support"),
+                  leading: const Icon(Icons.chat),
                 ),
                 ListTile(
-                  title: Text("Logout"),
-                  leading: Icon(Icons.logout),
+                  onTap: ()async{
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.of(context).pushNamedAndRemoveUntil("login_page", (route) => false);
+                  },
+                  title: const Text("Logout"),
+                  leading: const Icon(Icons.logout),
                 ),
               ]))
             ],
@@ -219,20 +245,28 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, 
-                crossAxisSpacing: 20, 
-                mainAxisSpacing: 20),
-              delegate: SliverChildBuilderDelegate(
-                (context, i) {
-                  return ItemCard(
-                      itemName: products[i]['title'],
-                      price: products[i]['price'],
-                      rating: products[i]['rating'],
-                      imagePath: products[i]['image']);
-                },
-                childCount: products.length,
+            SliverPadding(
+              padding: const EdgeInsets.all(10),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, 
+                  crossAxisSpacing: 20, 
+                  mainAxisSpacing: 20),
+                delegate: SliverChildBuilderDelegate(
+                  (context, i) {
+                    return InkWell(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ItemDetails(data: products[i],)));
+                      },
+                      child: ItemCard(
+                          itemName: products[i]['title'],
+                          price: products[i]['price'],
+                          rating: products[i]['rating'],
+                          imagePath: products[i]['image']),
+                    );
+                  },
+                  childCount: products.length,
+                ),
               ),
             )
           ],

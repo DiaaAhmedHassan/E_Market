@@ -65,7 +65,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                     height: 35,
                     alignment: Alignment.center,
                     padding: const EdgeInsets.only(left: 40, right: 20),
-                    child:  Text("Alliable amount: ${widget.data['available amount']}", style: const TextStyle(color: Colors.white),),
+                    child:  Text("Available amount: ${widget.data['available amount']}", style: const TextStyle(color: Colors.white),),
                   ),
                 ),
               ],
@@ -100,8 +100,8 @@ class _ItemDetailsState extends State<ItemDetails> {
                 )),
             Container(
               padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
-              child:  const Text( 
-                "fdksjhkfdhkfhdskafdkjsakfdhajfhdkahfkdjskanvkdsafhdksahfkdakfdhsakfdj",
+              child: Text( 
+                "${widget.data['description']}",
               ),
             ),
             Column(

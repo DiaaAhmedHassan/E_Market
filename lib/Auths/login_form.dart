@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:e_market/Auths/input_fields.dart';
+import 'package:e_market/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -26,16 +28,28 @@ class _LogInState extends State<LogIn> {
   }
 
   signInUser() async {
-    print(_emailController.text);
-    print(_passwordController);
-    try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
-          Navigator.of(context).pushNamed("home_page");
-    } on FirebaseAuthException catch (e) {
-      print("invalid credential");
+    var user = MarketUser(email: _emailController.text, password: _passwordController.text);
+    bool isValidCredentials =await user.signIn();
+    try{
+    if(isValidCredentials){
+      Navigator.pushReplacementNamed(context, 'home_page');
+    }
+    }catch(e){
+      print("Problem ==$e");
     }
   }
+
+  signInWithGoogle()async{
+    var user = MarketUser();
+    bool isUserSignedIn =await user.signInUsingGoogle();
+    if(isUserSignedIn){
+      Navigator.pushReplacementNamed(context, 'home_page');
+    }else{
+      print("Can't signIn");
+    }
+    
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +202,7 @@ class _LogInState extends State<LogIn> {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: ElevatedButton.icon(
                     onPressed: ()  {
-                      
+                      signInWithGoogle();
                     },
                     label: const Text("Google",
                         style: TextStyle(fontSize: 24, color: Colors.black)),

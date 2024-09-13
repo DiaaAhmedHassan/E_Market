@@ -1,4 +1,5 @@
 import 'package:e_market/Auths/input_fields.dart';
+import 'package:e_market/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +22,7 @@ class _RegistrationState extends State<Registration> {
       TextEditingController();
 
   GlobalKey<FormState> registerFormKey = GlobalKey();
+  
 
   showAndHidePassword() {
     setState(() {
@@ -29,24 +31,11 @@ class _RegistrationState extends State<Registration> {
   }
 
   signUpNewUser() async {
-    print('===============function called============');
-    print("Email: ${emailController.text}");
-    print("Password: ${passwordController.text}");
-    try {
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
-      print("register success");
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
-    } catch (e) {
-      print(e);
+   var user = MarketUser(email: emailController.text, password: passwordController.text, name: usernameController.text, phoneNumber: phoneNumberController.text);
+    try{
+      user.register();
+    }catch(e){
+      print("Registration failed");
     }
   }
 

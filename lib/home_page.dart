@@ -5,8 +5,10 @@ import 'package:e_market/HomePageTemps/category_icon.dart';
 import 'package:e_market/HomePageTemps/item_card.dart';
 import 'package:e_market/HomePageTemps/offer_banner.dart';
 import 'package:e_market/details_page.dart';
+import 'package:e_market/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -60,11 +62,17 @@ class _HomePageState extends State<HomePage> {
    
   ];
 
+  signOutUser()async{
+    var user = MarketUser();
+    user.signOut();
+  }
+
 
   final _scrollControl = ScrollController();
+  Timer? _scrollTimer;
 
   scrollOffersAutomatically(){
-    Timer.periodic(const Duration(seconds: 2), (timer){
+   _scrollTimer = Timer.periodic(const Duration(seconds: 2), (timer){
       final newPosition = _scrollControl.position.pixels +100;
       if(newPosition >= _scrollControl.position.maxScrollExtent){
         _scrollControl.animateTo(0, duration: const Duration(seconds: 2), curve: Curves.decelerate);
@@ -163,7 +171,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 ListTile(
                   onTap: ()async{
-                    await FirebaseAuth.instance.signOut();
+                    _scrollTimer!.cancel();
+                    signOutUser();
                     Navigator.of(context).pushNamedAndRemoveUntil("login_page", (route) => false);
                   },
                   title: const Text("Logout"),

@@ -1,7 +1,12 @@
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as path;
 import 'package:e_market/Auths/input_fields.dart';
 import 'package:e_market/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Registration extends StatefulWidget {
   const Registration({super.key});
@@ -22,7 +27,43 @@ class _RegistrationState extends State<Registration> {
       TextEditingController();
 
   GlobalKey<FormState> registerFormKey = GlobalKey();
-  
+
+  File? file;
+  String? photoUrl;
+
+  getImageFromCamera() async {
+    final ImagePicker imagePicker = ImagePicker();
+    final XFile? pickedImage =
+        await imagePicker.pickImage(source: ImageSource.camera);
+
+    if (pickedImage != null) {
+      await _handelImageUpload(pickedImage);
+    }
+
+    setState(() {});
+  }
+
+  Future<void> _handelImageUpload(XFile pickedImage) async {
+    file = File(pickedImage.path);
+
+    var imageName = path.basename(pickedImage.path);
+
+    var imageRef = FirebaseStorage.instance.ref(imageName);
+    await imageRef.putFile(file!);
+    photoUrl = await imageRef.getDownloadURL();
+  }
+
+  getImageFromGallery() async {
+    final ImagePicker imagePicker = ImagePicker();
+    final XFile? pickedImage =
+        await imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      _handelImageUpload(pickedImage);
+    }
+
+    setState(() {});
+  }
 
   showAndHidePassword() {
     setState(() {
@@ -31,16 +72,21 @@ class _RegistrationState extends State<Registration> {
   }
 
   signUpNewUser() async {
-   var user = MarketUser(email: emailController.text, password: passwordController.text, name: usernameController.text, phoneNumber: phoneNumberController.text);
+    var user = MarketUser(
+        imageUrl: photoUrl,
+        email: emailController.text,
+        password: passwordController.text,
+        name: usernameController.text,
+        phoneNumber: phoneNumberController.text);
 
-    try{
+    try {
       bool isSuccessRegister = await user.register();
-      if(isSuccessRegister){
-      Navigator.pushReplacementNamed(context, "login_page");
-      }else{
+      if (isSuccessRegister) {
+        Navigator.pushReplacementNamed(context, "login_page");
+      } else {
         print("Registration failed");
       }
-    }catch(e){
+    } catch (e) {
       print("Registration failed");
     }
   }
@@ -70,17 +116,72 @@ class _RegistrationState extends State<Registration> {
                     children: [
                       Center(
                         child: Container(
-                            margin: const EdgeInsets.only(top: 20),
-                            width: 135,
-                            height: 135,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.blue[200]),
-                            alignment: Alignment.center,
-                            child: Image.asset("images/avatar.png")),
+                          clipBehavior: Clip.hardEdge,
+                          margin: const EdgeInsets.only(top: 20),
+                          width: 135,
+                          height: 135,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle, color: Colors.blue[200]),
+                          alignment: Alignment.center,
+                          child: file == null
+                              ? Image.asset("images/avatar.png")
+                              : Image.network(
+                                  photoUrl!,
+                                  fit: BoxFit.fill,
+                                  width: 135,
+                                  height: 135,
+                                ),
+                        ),
                       ),
                       MaterialButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (builder) {
+                                return Container(
+                                  height: 150.0,
+                                  color: Colors.transparent, 
+                                  child: Container(
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.only(
+                                              topLeft:
+                                                  Radius.circular(10.0),
+                                              topRight:
+                                                  Radius.circular(10.0))),
+                                      child:  Center(
+                                        child:
+                                            Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                const Text("Upload a photo via", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                                                const SizedBox(height: 30,),                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                  children: [
+                                                  Column(
+                                                    children: [
+                                                      IconButton(onPressed: (){
+                                                        getImageFromGallery();
+                                                      }, icon: const Icon(Icons.image, size: 40, color: Colors.blue,)),
+                                                      const Text("Gallery",)
+                                                    ],
+                                                  ),
+                                                  Column(
+                                                    children: [
+                                                      IconButton(onPressed: (){
+                                                        getImageFromCamera();
+                                                      }, icon: const Icon(Icons.camera_alt, size: 40, color: Colors.blue,)),
+                                                      const Text("Capture a photo",)
+                                                
+                                                    ],
+                                                  ),
+                                                ],),
+                                              ],
+                                            ),
+                                      )),
+                                );
+                              });
+                        },
                         textColor: Colors.black,
                         child: const Text("Upload"),
                       )
@@ -153,7 +254,7 @@ class _RegistrationState extends State<Registration> {
                 UserInputField(
                   inputType: TextInputType.phone,
                   validation: (val) {
-                    if(val!.isEmpty){
+                    if (val!.isEmpty) {
                       return "This field is required";
                     }
                     if (val.length != 11) {
@@ -184,7 +285,7 @@ class _RegistrationState extends State<Registration> {
                     passwordController.text = val!;
                   },
                   validation: (val) {
-                    if(val!.isEmpty){
+                    if (val!.isEmpty) {
                       return "This field is required";
                     }
                     if (val.length < 6) {
@@ -246,9 +347,8 @@ class _RegistrationState extends State<Registration> {
                             borderRadius: BorderRadius.circular(10)),
                         onPressed: () {
                           print(passwordController.text);
-                            registerFormKey.currentState!.save();
+                          registerFormKey.currentState!.save();
                           if (registerFormKey.currentState!.validate()) {
-                            
                             signUpNewUser();
                           }
                         },

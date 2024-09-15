@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage> {
            if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else if (!snapshot.hasData || snapshot.data == null) {
-              return Text('No user data available');
+              return const Text('No user data available');
             } else {
               MarketUser user = snapshot.data!;
               return Row(
@@ -168,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                           maxLines: 1,
                           softWrap: false,
                           user.getName(),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 24,
                             overflow: TextOverflow.fade,

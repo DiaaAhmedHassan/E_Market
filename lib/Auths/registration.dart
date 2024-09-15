@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Registration extends StatefulWidget {
-  Registration({super.key});
+  const Registration({super.key});
 
   @override
   State<Registration> createState() => _RegistrationState();
@@ -32,8 +32,14 @@ class _RegistrationState extends State<Registration> {
 
   signUpNewUser() async {
    var user = MarketUser(email: emailController.text, password: passwordController.text, name: usernameController.text, phoneNumber: phoneNumberController.text);
+
     try{
-      user.register();
+      bool isSuccessRegister = await user.register();
+      if(isSuccessRegister){
+      Navigator.pushReplacementNamed(context, "login_page");
+      }else{
+        print("Registration failed");
+      }
     }catch(e){
       print("Registration failed");
     }
@@ -97,6 +103,7 @@ class _RegistrationState extends State<Registration> {
                     if (val!.isEmpty) {
                       return "This field is required";
                     }
+                    return null;
                   },
                   controller: usernameController,
                   secureText: false,
@@ -123,6 +130,7 @@ class _RegistrationState extends State<Registration> {
                         .hasMatch(val)) {
                       return 'Please enter a valid email';
                     }
+                    return null;
                   },
                   onSave: (val) {
                     emailController.text = val!;
@@ -151,6 +159,7 @@ class _RegistrationState extends State<Registration> {
                     if (val.length != 11) {
                       return "Please enter a valid phone number";
                     }
+                    return null;
                   },
                   onSave: (val) {
                     phoneNumberController.text = val!;
@@ -181,6 +190,7 @@ class _RegistrationState extends State<Registration> {
                     if (val.length < 6) {
                       return "Password can't be less than 6 characters at least";
                     }
+                    return null;
                   },
                   controller: passwordController,
                   secureText: isPasswordHidden,
@@ -212,6 +222,7 @@ class _RegistrationState extends State<Registration> {
                     if (val != passwordController.text) {
                       return "Password confirmation field";
                     }
+                    return null;
                   },
                   controller: passwordConfirmationController,
                   secureText: isConfirmationHidden,

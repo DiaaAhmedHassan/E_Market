@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class MarketUser {
+  String? id;
   String? email;
   String? password;
   String? name;
@@ -10,7 +11,15 @@ class MarketUser {
   String? imageUrl;
 
   MarketUser(
-      {this.email, this.password, this.name, this.phoneNumber, this.imageUrl});
+      {this.id, this.email, this.password, this.name, this.phoneNumber, this.imageUrl});
+
+  setId(String id){
+    this.id = id;
+  }    
+
+  getId(){
+    return id;
+  }
 
   setName(String name) {
     this.name = name;
@@ -18,6 +27,22 @@ class MarketUser {
 
   getName() {
     return name;
+  }
+
+  setEmail(String email){
+    this.email = email;
+  }
+
+  getEmail(){
+    return email;
+  }
+
+  setPassword(String password){
+    this.password = password;
+  }
+
+  getPassword(){
+    return password;
   }
 
   setPhoneNumber(String phoneNumber) {
@@ -28,7 +53,15 @@ class MarketUser {
     return phoneNumber;
   }
 
-  register() async {
+   setImage(String imageUrl){
+    this.imageUrl = imageUrl;
+  }
+
+  getImage(){
+    return imageUrl;
+  }
+
+  Future<bool> register() async {
     try {
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -37,23 +70,29 @@ class MarketUser {
       );
       print(credential);
       addUserToDatabase();
+      return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
       }
+      return false;
     } catch (e) {
       print(e);
+      return false;
     }
   }
 
   addUserToDatabase() {
-    CollectionReference users = FirebaseFirestore.instance.collection("users");
-    users.add({
+   String userId = FirebaseAuth.instance.currentUser!.uid;
+  DocumentReference users = FirebaseFirestore.instance.collection("users").doc(userId);
+    
+    users.set({
+      "userId": userId,
       "username": name,
       "phoneNumber": phoneNumber,
-      "imageUrl": imageUrl ?? "images/avatar.png"
+      "imageUrl": imageUrl ?? "https://firebasestorage.googleapis.com/v0/b/e-market-cdf14.appspot.com/o/avatar.png?alt=media&token=85646f6b-af57-413d-886d-8eb3557b7f1e"
     });
   }
 
@@ -75,17 +114,20 @@ class MarketUser {
         idToken: googleAuth?.idToken,
       );
 
-      addGoogleUserToDatabase(googleUser.displayName, googleUser.email, googleUser.photoUrl);
       // Once signed in, return the UserCredential
      await FirebaseAuth.instance.signInWithCredential(credential);
+      addGoogleUserToDatabase(FirebaseAuth.instance.currentUser!.displayName, phoneNumber??"none", FirebaseAuth.instance.currentUser!.photoURL);
      return true;
   }
 
-  addGoogleUserToDatabase(String? name, String? email, String? imageUrl){
-    CollectionReference users = FirebaseFirestore.instance.collection("users");
-    users.add({
+  addGoogleUserToDatabase(String? name, String? phone, String? imageUrl){
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    DocumentReference users = FirebaseFirestore.instance.collection("users").doc(userId);
+    users.set(
+      {
+      "userId": userId,
       "username": name,
-      "PhoneNumber": "none",
+      "PhoneNumber": phone??"none",
       "imageUrl": imageUrl
     });
   }
@@ -95,7 +137,7 @@ class MarketUser {
           .signInWithEmailAndPassword(email: email!, password: password!);
       print(credential);
       return true;
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       print("invalid credential");
       return false;
     }

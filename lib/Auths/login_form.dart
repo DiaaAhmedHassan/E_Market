@@ -1,10 +1,7 @@
-import 'dart:math';
 
 import 'package:e_market/Auths/input_fields.dart';
 import 'package:e_market/user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -16,8 +13,8 @@ class LogIn extends StatefulWidget {
 class _LogInState extends State<LogIn> {
   bool isPasswordHidden = true;
 
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   GlobalKey<FormState> loginFormKey = GlobalKey();
 
@@ -107,6 +104,7 @@ class _LogInState extends State<LogIn> {
                     if (val!.isEmpty) {
                       return "Please insert your email";
                     }
+                    return null;
                   },
                   hint: "eg. example@domain.com",
                   prefix: const Icon(Icons.email),
@@ -133,6 +131,7 @@ class _LogInState extends State<LogIn> {
                     if (val!.isEmpty) {
                       return "please enter your password";
                     }
+                    return null;
                   },
                   secureText: isPasswordHidden,
                   hint: "pa#@#rd",

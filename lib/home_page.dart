@@ -1,6 +1,7 @@
 import 'dart:async';
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_market/HomePageTemps/category_icon.dart';
 import 'package:e_market/HomePageTemps/item_card.dart';
 import 'package:e_market/HomePageTemps/offer_banner.dart';
@@ -8,7 +9,6 @@ import 'package:e_market/details_page.dart';
 import 'package:e_market/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -62,10 +62,29 @@ class _HomePageState extends State<HomePage> {
    
   ];
 
+  var user;
+  
+ Future<MarketUser?> getUserData()async{
+    CollectionReference users = FirebaseFirestore.instance.collection("users");
+    DocumentSnapshot snapshot = await users.doc(FirebaseAuth.instance.currentUser!.uid).get();
+    if(snapshot.exists){
+    user = MarketUser(name: snapshot.get('username'), imageUrl: snapshot.get('imageUrl'));
+    setState(() {
+      
+    });
+    return user;
+    }else{
+      print("No data found");
+    }
+  }
+
+
+
   signOutUser()async{
     var user = MarketUser();
     user.signOut();
   }
+
 
 
   final _scrollControl = ScrollController();
@@ -84,6 +103,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     scrollOffersAutomatically();
+    getUserData();
     super.initState();
   }
   @override
@@ -111,78 +131,101 @@ class _HomePageState extends State<HomePage> {
       ),
       
       drawer: Drawer(
-
-        child: SafeArea(
-          child: Column(
-            children: [
-              Row(
+  child: SafeArea(
+    child: Column(
+      children: [
+        FutureBuilder<MarketUser?>(
+          future: getUserData(),
+          builder: (context, snapshot) {
+           if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else if (!snapshot.hasData || snapshot.data == null) {
+              return Text('No user data available');
+            } else {
+              MarketUser user = snapshot.data!;
+              return Row(
                 children: [
-
                   Container(
                     margin: const EdgeInsets.all(10),
+                    clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(100),
                     ),
-                    child: Image.asset(
-                      "images/avatar.png",
+                    child: Image.network(
+                      user.getImage(),
                       width: 80,
                       height: 80,
+                      fit: BoxFit.cover,
                     ),
                   ),
-
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "John Doe",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                      Text(
-                        "John09@gmail.com",
-                      ),
-                    ],
-                  )
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          maxLines: 1,
+                          softWrap: false,
+                          user.getName(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            overflow: TextOverflow.fade,
+                          ),
+                        ),
+                        Text(
+                          FirebaseAuth.instance.currentUser!.email ?? '',
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
+              );
+            }
+          },
+        ),
+        const Divider(),
+        Expanded(
+          child: ListView(
+            children: [
+              ListTile(
+                onTap: () {
+                  // Navigate to Profile
+                },
+                title: const Text("Profile"),
+                leading: const Icon(Icons.person),
               ),
-              const Divider(),
-              Expanded(
-                  child: ListView(children:  [
-                ListTile(
-                  onTap: (){
-
-                  },
-                  title: const Text("Profile"),
-                  leading: const Icon(Icons.person),
-                ),
-                ListTile(
-                  onTap: (){
-
-                  },
-                  title: const Text("Cart"),
-                  leading: const Icon(Icons.shopping_cart),
-                ),
-                ListTile(
-                  onTap: (){
-
-                  },
-                  title: const Text("Customer support"),
-                  leading: const Icon(Icons.chat),
-                ),
-                ListTile(
-                  onTap: ()async{
-                    _scrollTimer!.cancel();
-                    signOutUser();
-                    Navigator.of(context).pushNamedAndRemoveUntil("login_page", (route) => false);
-                  },
-                  title: const Text("Logout"),
-                  leading: const Icon(Icons.logout),
-                ),
-              ]))
+              ListTile(
+                onTap: () {
+                  // Navigate to Cart
+                },
+                title: const Text("Cart"),
+                leading: const Icon(Icons.shopping_cart),
+              ),
+              ListTile(
+                onTap: () {
+                  // Navigate to Customer Support
+                },
+                title: const Text("Customer support"),
+                leading: const Icon(Icons.chat),
+              ),
+              ListTile(
+                onTap: () async {
+                  _scrollTimer?.cancel();
+                  await signOutUser();
+                  Navigator.of(context).pushNamedAndRemoveUntil("login_page", (route) => false);
+                },
+                title: const Text("Logout"),
+                leading: const Icon(Icons.logout),
+              ),
             ],
           ),
         ),
-      ),
+      ],
+    ),
+  ),
+),
       body: CustomScrollView(
         slivers: [
             const SliverToBoxAdapter(

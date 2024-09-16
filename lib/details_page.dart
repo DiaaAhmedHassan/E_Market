@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:e_market/product.dart';
 
 class ItemDetails extends StatefulWidget {
-  const ItemDetails({super.key, this.data});
+  const ItemDetails({super.key, this.product});
 
-   final data;
+   final product;
 
 
   @override
@@ -20,7 +21,7 @@ class _ItemDetailsState extends State<ItemDetails> {
   void initState() {
     super.initState();
     // Initialize the controller with the initial value
-    print(widget.data);
+    print(widget.product);
     _amountController.text = '1';
     
   }
@@ -52,7 +53,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                             blurRadius: 20,
                             offset: Offset(0, 10)),
                       ]),
-                  child: Image.asset("${widget.data['image']}"),
+                  child: Image.network("${widget.product.imageUrl}"),
                 ),
                 Positioned(
                   right: 20,
@@ -65,7 +66,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                     height: 35,
                     alignment: Alignment.center,
                     padding: const EdgeInsets.only(left: 40, right: 20),
-                    child:  Text("Alliable amount: ${widget.data['available amount']}", style: const TextStyle(color: Colors.white),),
+                    child:  Text("Available amount: ${widget.product.availableAmount}", style: const TextStyle(color: Colors.white),),
                   ),
                 ),
               ],
@@ -73,7 +74,7 @@ class _ItemDetailsState extends State<ItemDetails> {
             Container(
               padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
               child:   Text(
-                "${widget.data['title']}",
+                "${widget.product.title}",
                 style: const TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
@@ -82,14 +83,14 @@ class _ItemDetailsState extends State<ItemDetails> {
             ),
             Container(
                   padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
-                  child:   Text("${widget.data['price']} \$", style: const TextStyle(color: Color.fromARGB(255, 0, 75, 141), fontSize: 30)),
+                  child:   Text("${widget.product.price} \$", style: const TextStyle(color: Color.fromARGB(255, 0, 75, 141), fontSize: 30)),
                 ),
             Container(
                 padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
                 child: Row(
                   children: [
                     ...List.generate(5, (i) {
-                       return  widget.data['rating']<=i? const Icon(
+                       return  widget.product.rating<=i? const Icon(
                         Icons.star_outline,
                         color: Colors.amber,
                         size: 35,
@@ -100,8 +101,8 @@ class _ItemDetailsState extends State<ItemDetails> {
                 )),
             Container(
               padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
-              child:  const Text( 
-                "fdksjhkfdhkfhdskafdkjsakfdhajfhdkahfkdjskanvkdsafhdksahfkdakfdhsakfdj",
+              child: Text( 
+                "${widget.product.description}",
               ),
             ),
             Column(

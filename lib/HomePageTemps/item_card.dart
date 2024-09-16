@@ -20,7 +20,7 @@ class ItemCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(imagePath, width: 130, height: 110, fit: BoxFit.fill,),
+          Image.network(imagePath, width: 130, height: 110, fit: BoxFit.fill,),
           Expanded(
             child: Container(
               padding: const EdgeInsets.all(8),

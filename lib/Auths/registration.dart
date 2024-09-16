@@ -1,10 +1,11 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as path;
 import 'package:e_market/Auths/input_fields.dart';
 import 'package:e_market/user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -45,12 +46,13 @@ class _RegistrationState extends State<Registration> {
 
   Future<void> _handelImageUpload(XFile pickedImage) async {
     file = File(pickedImage.path);
-
+    if(file != null){
     var imageName = path.basename(pickedImage.path);
 
     var imageRef = FirebaseStorage.instance.ref(imageName);
     await imageRef.putFile(file!);
     photoUrl = await imageRef.getDownloadURL();
+    }
   }
 
   getImageFromGallery() async {
@@ -82,7 +84,8 @@ class _RegistrationState extends State<Registration> {
     try {
       bool isSuccessRegister = await user.register();
       if (isSuccessRegister) {
-        Navigator.pushReplacementNamed(context, "login_page");
+        sendEmailVerification();
+        setState(() {});
       } else {
         print("Registration failed");
       }
@@ -91,12 +94,27 @@ class _RegistrationState extends State<Registration> {
     }
   }
 
+  sendEmailVerification() async{
+    final user = FirebaseAuth.instance.currentUser;
+
+    user!.sendEmailVerification();
+    print("verification sent");
+  }
+
+
   showAndHideConfirmation() {
     setState(() {
       isConfirmationHidden = !isConfirmationHidden;
     });
   }
-
+@override
+  void initState() {
+    super.initState();
+    if(FirebaseAuth.instance.currentUser != null && FirebaseAuth.instance.currentUser!.emailVerified){
+      print("email verified");
+      Navigator.pushReplacementNamed(context, 'login_page');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,12 +143,12 @@ class _RegistrationState extends State<Registration> {
                           alignment: Alignment.center,
                           child: file == null
                               ? Image.asset("images/avatar.png")
-                              : Image.network(
+                              : photoUrl != null? Image.network(
                                   photoUrl!,
                                   fit: BoxFit.fill,
                                   width: 135,
                                   height: 135,
-                                ),
+                                ):Image.file(file!),
                         ),
                       ),
                       MaterialButton(
@@ -350,6 +368,16 @@ class _RegistrationState extends State<Registration> {
                           registerFormKey.currentState!.save();
                           if (registerFormKey.currentState!.validate()) {
                             signUpNewUser();
+                            AwesomeDialog(context: context,
+                            dialogType: DialogType.info,
+                            title: "Check your email", 
+                            body: Text("An email verification sent to the email ${emailController.text} please check your email before you login"),
+                            btnOkText: "Ok",
+                            btnOkOnPress: (){
+                              Navigator.pushReplacementNamed(context, 'login_page');
+                            }
+                            ).show();
+
                           }
                         },
                         color: Colors.blue,

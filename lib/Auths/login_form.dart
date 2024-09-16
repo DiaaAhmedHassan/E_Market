@@ -1,6 +1,8 @@
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:e_market/Auths/input_fields.dart';
 import 'package:e_market/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LogIn extends StatefulWidget {
@@ -15,6 +17,7 @@ class _LogInState extends State<LogIn> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _recoveryEmailController = TextEditingController();
 
   GlobalKey<FormState> loginFormKey = GlobalKey();
 
@@ -30,6 +33,8 @@ class _LogInState extends State<LogIn> {
     try{
     if(isValidCredentials){
       Navigator.pushReplacementNamed(context, 'home_page');
+    }else{
+      print("Non valid cred =======");
     }
     }catch(e){
       print("Problem ==$e");
@@ -47,6 +52,9 @@ class _LogInState extends State<LogIn> {
     
   }
 
+  sendPasswordResetEmail(String email) async{
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +158,17 @@ class _LogInState extends State<LogIn> {
                 Container(
                     alignment: Alignment.bottomRight,
                     child: MaterialButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        loginFormKey.currentState!.save();
+                        sendPasswordResetEmail(_emailController.text);
+                        AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.success,
+                          title: "Password reset email sent to ${_emailController.text}",
+                          btnOkText: "Ok",
+                        
+                        ).show();
+                      },
                       child: const Text("Forgot password ?"),
                     )),
                 const SizedBox(
@@ -164,7 +182,7 @@ class _LogInState extends State<LogIn> {
                       onPressed: () {
                         loginFormKey.currentState!.save();
                         if(loginFormKey.currentState!.validate()){
-                          signInUser();
+                          signInUser();   
                         }
                         
                       },

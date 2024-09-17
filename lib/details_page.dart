@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:e_market/product.dart';
 
 class ItemDetails extends StatefulWidget {
   const ItemDetails({super.key, this.product});

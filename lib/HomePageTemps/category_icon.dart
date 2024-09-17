@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
 class CategoryIcon extends StatelessWidget {
-  const CategoryIcon(
+   const CategoryIcon(
       {super.key,
       required this.title,
-      required this.icon,
-      required this.color,
-      this.iconColor});
+      required this.icon, 
+      required this.isSelected,
+      required this.onTap});
 
   final String title;
-  final IconData icon;
-  final Color? color;
-  final Color? iconColor;
+  final String icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +25,14 @@ class CategoryIcon extends StatelessWidget {
           height: 50,
           decoration: BoxDecoration(
             border: Border.all(width: 3),
-            color: color,
+            color: isSelected? Colors.blue[50]: Colors.white,
             borderRadius: BorderRadius.circular(50),
           ),
-          child: Icon(
-            icon,
-            color: iconColor ?? Colors.white,
-            size: 30,
-          ),
+          child: IconButton(icon:
+          Image.asset(icon),
+           onPressed: (){
+            onTap();
+           },),
         ),
         Text(
           title,
@@ -38,4 +41,6 @@ class CategoryIcon extends StatelessWidget {
       ],
     );
   }
+
+ 
 }

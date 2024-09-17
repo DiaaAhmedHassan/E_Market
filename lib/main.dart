@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget{
       routes: {
         "home_page": (route)=> const HomePage(),
         "login_page": (route)=> const LogIn(),
-        "registration_page": (route)=> Registration(),
+        "registration_page": (route)=> const Registration(),
       },
     );
   }

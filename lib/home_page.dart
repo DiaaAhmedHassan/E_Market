@@ -20,11 +20,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Product> products = [];
 
-  getProductData() async {
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection("products").get();
+  String selectedCategory = "all";
 
-    snapshot.docs.forEach((i) {
+
+  QuerySnapshot? productSnapshot;
+  getProductData() async {
+     productSnapshot == null ? print("snapshot is currently null"): print("Snapshot is no longer null");
+     productSnapshot ??= await FirebaseFirestore.instance.collection("products").get();
+
+     products.clear();
+    for (var i in productSnapshot!.docs) {
       products.add(Product(
           title: i.get('title'),
           price: (i.get('price') as int).toDouble(),
@@ -33,25 +38,31 @@ class _HomePageState extends State<HomePage> {
           availableAmount: i.get('availableAmount'),
           imageUrl: i.get("imageUrl"),
           category: i.get('category')));
-    });
+    }
   }
 
   List categories = [
     {
-      "title": "All",
-      "icon": Icons.all_inclusive,
-      "color": Colors.blue,
+      "title": "all",
+      "icon": "images/all.png",
+      "color": Colors.blue[50],
       "iconColor": Colors.white
     },
     {
-      "title": "Electronics",
-      "icon": Icons.computer,
+      "title": "electronics",
+      "icon": "images/electronics.png",
       "color": Colors.white,
       "iconColor": Colors.black
     },
     {
-      "title": "Kitchen",
-      "icon": Icons.kitchen_outlined,
+      "title": "kitchen",
+      "icon": "images/kitchen.png",
+      "color": Colors.white,
+      "iconColor": Colors.black
+    },
+    {
+      "title": "clothes",
+      "icon": "images/t-shirt.png",
       "color": Colors.white,
       "iconColor": Colors.black
     },
@@ -104,6 +115,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     scrollOffersAutomatically();
+    print("i'm in initState");
     getProductData();
     getUserData();
     super.initState();
@@ -132,7 +144,9 @@ class _HomePageState extends State<HomePage> {
               hintStyle: const TextStyle(fontSize: 18, color: Colors.black38)),
         ),
       ),
+      
       drawer: Drawer(
+
         child: SafeArea(
           child: Column(
             children: [
@@ -281,24 +295,51 @@ class _HomePageState extends State<HomePage> {
               alignment: Alignment.center,
               padding: const EdgeInsets.all(8),
               height: 100,
-              child: ListView.builder(
-                itemCount: categories.length,
-                shrinkWrap: true,
+              child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                itemBuilder: (context, i) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: CategoryIcon(
-                      title: categories[i]['title'],
-                      icon: categories[i]['icon'],
-                      color: categories[i]['color'],
-                      iconColor: categories[i]['iconColor'],
-                    ),
-                  );
-                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ...List.generate(
+                      categories.length, (i){
+                      return Row(
+                        children: [
+                          CategoryIcon(
+                            title: categories[i]['title'], 
+                            icon: categories[i]['icon'],  
+                            isSelected: selectedCategory == categories[i]['title'],
+                            onTap: ()async{
+                              print("on tap pressed =========");
+                              print("${categories[i]['title']} selected =============");
+                              setState(() {
+                                
+                                selectedCategory = categories[i]['title'];
+                              });
+                              
+                                print(categories[i]['title']);
+                              //Todo filter the categories with firebase
+                                if(selectedCategory == "all"){
+                                productSnapshot =await FirebaseFirestore.instance.collection("products").get();
+                                }else{
+                                productSnapshot =await FirebaseFirestore.instance.collection("products").where("category", isEqualTo:categories[i]['title']).get();
+
+                                }
+                                
+                                await getProductData();
+                                print(productSnapshot!.docs);
+                              setState(() {});
+                            },
+                            ),
+                            SizedBox(width: 20,),
+                        ],
+                      );
+                    })
+                  ],
+                  ),
+                ),
               ),
             ),
-          ),
+          
           SliverPadding(
             padding: const EdgeInsets.all(10),
             sliver: SliverGrid(

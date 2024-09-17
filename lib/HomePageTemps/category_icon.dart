@@ -9,7 +9,7 @@ class CategoryIcon extends StatelessWidget {
       required this.onTap});
 
   final String title;
-  final String icon;
+  final Image icon;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -24,12 +24,12 @@ class CategoryIcon extends StatelessWidget {
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            border: Border.all(width: 3),
+            border: Border.all(width: 1),
             color: isSelected? Colors.blue[50]: Colors.white,
             borderRadius: BorderRadius.circular(50),
           ),
           child: IconButton(icon:
-          Image.asset(icon),
+          icon,
            onPressed: (){
             onTap();
            },),

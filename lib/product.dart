@@ -6,7 +6,7 @@ class Product {
   int _rating;
   int _availableAmount;
   String _imageUrl;
-  String _category;
+  List _category;
 
   Product({
     required String title,
@@ -15,7 +15,7 @@ class Product {
     required int rating,
     required  int availableAmount, 
     required String imageUrl,
-    required String category,
+    required List category,
 
   }):
     _title = title,
@@ -33,7 +33,7 @@ class Product {
   int get rating => _rating;
   int get availableAmount => _availableAmount;
   String get imageUrl => _imageUrl;
-  String get category => _category;
+  List get category => _category;
 
   set title(String title){
     _title = title;
@@ -68,7 +68,7 @@ class Product {
     _imageUrl = imageUrl;
   }
 
-  set category(String category){
+  set category(List category){
     _category = category;
   }
 

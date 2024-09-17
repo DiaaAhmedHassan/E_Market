@@ -9,6 +9,7 @@ import 'package:e_market/product.dart';
 import 'package:e_market/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fuzzy/fuzzy.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,6 +23,9 @@ class _HomePageState extends State<HomePage> {
 
   String selectedCategory = "all";
 
+  bool isSearching = true;
+
+  TextEditingController searchBarController = TextEditingController();
 
   QuerySnapshot? productSnapshot;
   getProductData() async {
@@ -41,38 +45,19 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  List categories = [
-    {
-      "title": "all",
-      "icon": "images/all.png",
-      "color": Colors.blue[50],
-      "iconColor": Colors.white
-    },
-    {
-      "title": "electronics",
-      "icon": "images/electronics.png",
-      "color": Colors.white,
-      "iconColor": Colors.black
-    },
-    {
-      "title": "kitchen",
-      "icon": "images/kitchen.png",
-      "color": Colors.white,
-      "iconColor": Colors.black
-    },
-    {
-      "title": "clothes",
-      "icon": "images/t-shirt.png",
-      "color": Colors.white,
-      "iconColor": Colors.black
-    },
-  ];
+  List categories = [];
 
-  List offers = [
-    {"image": "images/offer1.png"},
-    {"image": "images/offer2.png"},
-    {"image": "images/offer3.png"},
-  ];
+  getCategoriesData() async{
+    QuerySnapshot categorySnapshot = await FirebaseFirestore.instance.collection("categories").get();
+    categories.addAll(categorySnapshot.docs);    
+  }
+
+  List offers = [];
+
+  getOffersData() async{
+    QuerySnapshot offerSnapshot = await FirebaseFirestore.instance.collection("offers").get();
+    offers.addAll(offerSnapshot.docs);
+  }
 
   var user;
 
@@ -98,7 +83,6 @@ class _HomePageState extends State<HomePage> {
 
   final _scrollControl = ScrollController();
   Timer? _scrollTimer;
-
   scrollOffersAutomatically() {
     _scrollTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
       final newPosition = _scrollControl.position.pixels + 100;
@@ -112,10 +96,42 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void fuzzySearch(String val){
+    print("icon clicked");
+    print(val);
+    
+    List productsTitle = [for(var product in products ) product.title];
+
+    final fuse = Fuzzy(productsTitle, options: FuzzyOptions(
+      threshold: 0.3,
+      findAllMatches: true,
+      tokenize: true 
+    ));
+
+    final result = fuse.search(val);
+    List results = [];
+    result.forEach((r)async{
+      print("n score: ${r.score}::n title ${r.item}");
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection("products").where("title", isEqualTo: r.item).get(); 
+      
+      snapshot.docs.forEach((doc){
+        results.add(doc['title']);
+      });
+
+      productSnapshot = await FirebaseFirestore.instance.collection("products").where("title", whereIn: results).get();
+      getProductData();
+    });
+  
+    setState(() {  });
+  }
+  
+
   @override
   void initState() {
+    getOffersData();
     scrollOffersAutomatically();
     print("i'm in initState");
+    getCategoriesData();
     getProductData();
     getUserData();
     super.initState();
@@ -126,6 +142,14 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
+          onChanged: (val){
+            if(val.isEmpty){
+              setState(() {
+                isSearching = true;
+              });
+            }
+          },
+          controller: searchBarController,
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(
               filled: true,
@@ -135,11 +159,23 @@ class _HomePageState extends State<HomePage> {
                   borderSide: BorderSide.none),
               contentPadding: const EdgeInsets.all(5),
               suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
+                  onPressed: () async{
+                    if(isSearching){
+                      fuzzySearch(searchBarController.text);
+                      isSearching = false;
+                      setState(() {});
+                    }else {
+                    isSearching = true;
+                    productSnapshot =await FirebaseFirestore.instance.collection('products').get();
+                    searchBarController.text = "";
+                    getProductData();
+                    setState(() {});
+                    }
+                  },
+                  icon:isSearching? const Icon(
                     Icons.search,
                     size: 30,
-                  )),
+                  ): const Icon(Icons.close)),
               hintText: "Search",
               hintStyle: const TextStyle(fontSize: 18, color: Colors.black38)),
         ),
@@ -229,9 +265,9 @@ class _HomePageState extends State<HomePage> {
                     ListTile(
                       onTap: () async {
                         _scrollTimer?.cancel();
-                        await signOutUser();
                         Navigator.of(context).pushNamedAndRemoveUntil(
                             "login_page", (route) => false);
+                        await signOutUser();
                       },
                       title: const Text("Logout"),
                       leading: const Icon(Icons.logout),
@@ -270,7 +306,7 @@ class _HomePageState extends State<HomePage> {
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, i) {
-                    return OfferBanner(offerImage: offers[i]['image']);
+                    return OfferBanner(offerImage: offers[i]['imageUrl']);
                   },
                 ),
               ),
@@ -300,13 +336,24 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    CategoryIcon(
+                      title: "All",
+                       icon: Image.asset("images/all.png"), 
+                       isSelected: selectedCategory == "all", 
+                       onTap: ()async{
+                        selectedCategory = "all";
+                        productSnapshot = await FirebaseFirestore.instance.collection("products").get();
+
+                        getProductData();
+                       }),
+                       const SizedBox(width: 20),
                     ...List.generate(
                       categories.length, (i){
                       return Row(
                         children: [
                           CategoryIcon(
                             title: categories[i]['title'], 
-                            icon: categories[i]['icon'],  
+                            icon: Image.network(categories[i]['iconUrl']),  
                             isSelected: selectedCategory == categories[i]['title'],
                             onTap: ()async{
                               print("on tap pressed =========");
@@ -317,20 +364,15 @@ class _HomePageState extends State<HomePage> {
                               });
                               
                                 print(categories[i]['title']);
-                              //Todo filter the categories with firebase
-                                if(selectedCategory == "all"){
-                                productSnapshot =await FirebaseFirestore.instance.collection("products").get();
-                                }else{
-                                productSnapshot =await FirebaseFirestore.instance.collection("products").where("category", isEqualTo:categories[i]['title']).get();
-
-                                }
+                              //Todo filter the categories with firebase 
+                                productSnapshot =await FirebaseFirestore.instance.collection("products").where("category", arrayContains: categories[i]['title']).get();
                                 
                                 await getProductData();
                                 print(productSnapshot!.docs);
                               setState(() {});
                             },
                             ),
-                            SizedBox(width: 20,),
+                           const SizedBox(width: 20,),
                         ],
                       );
                     })
@@ -343,6 +385,7 @@ class _HomePageState extends State<HomePage> {
           SliverPadding(
             padding: const EdgeInsets.all(10),
             sliver: SliverGrid(
+              
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2, crossAxisSpacing: 20, mainAxisSpacing: 20),
               delegate: SliverChildBuilderDelegate(
@@ -371,4 +414,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+  
+  
 }

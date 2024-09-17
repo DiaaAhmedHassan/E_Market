@@ -18,7 +18,7 @@ class OfferBanner extends StatelessWidget {
           width: 350,
           child: Stack(
             children: [
-              Image.asset(
+              Image.network(
                 offerImage,
                 width: 350,
                 height: 200,

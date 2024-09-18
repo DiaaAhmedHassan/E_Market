@@ -33,8 +33,7 @@ class MyApp extends StatelessWidget{
         titleTextStyle: TextStyle(color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold),
         
       )),
-      home:const CartPage(), 
-      // FirebaseAuth.instance.currentUser == null ?const LogIn(): const HomePage(),
+      home:  FirebaseAuth.instance.currentUser == null ?const LogIn(): const HomePage(),
 
       routes: {
         "home_page": (route)=> const HomePage(),

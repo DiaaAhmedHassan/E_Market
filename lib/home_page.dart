@@ -162,10 +162,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     getOffersData();
-    scrollOffersAutomatically();
     print("i'm in initState");
     getCategoriesData();
     getProductData();
+    scrollOffersAutomatically();
     getUserData();
     super.initState();
   }
@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> {
                   if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else if (!snapshot.hasData || snapshot.data == null) {
-                    return const Text('No user data available');
+                    return const LinearProgressIndicator(color: Colors.blue,);
                   } else {
                     MarketUser user = snapshot.data!;
                     return Row(
@@ -278,7 +278,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     ListTile(
                       onTap: () {
-                        // Navigate to Cart
+                        Navigator.of(context).pushNamed("cart_page");
                       },
                       title: const Text("Cart"),
                       leading: const Icon(Icons.shopping_cart),
@@ -411,7 +411,7 @@ class _HomePageState extends State<HomePage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => ItemDetails(
-                                    product: products[i],
+                                    data: products[i],
                                   )));
                     },
                     child: ItemCard(

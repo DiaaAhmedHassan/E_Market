@@ -1,5 +1,6 @@
 import 'package:e_market/Auths/login_form.dart';
 import 'package:e_market/Auths/registration.dart';
+import 'package:e_market/cart_page.dart';
 import 'package:e_market/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -32,12 +33,14 @@ class MyApp extends StatelessWidget{
         titleTextStyle: TextStyle(color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold),
         
       )),
-      home: FirebaseAuth.instance.currentUser == null ?const LogIn(): const HomePage(),
+      home:const CartPage(), 
+      // FirebaseAuth.instance.currentUser == null ?const LogIn(): const HomePage(),
 
       routes: {
         "home_page": (route)=> const HomePage(),
         "login_page": (route)=> const LogIn(),
         "registration_page": (route)=> const Registration(),
+        "cart_page": (route) => const CartPage()
       },
     );
   }

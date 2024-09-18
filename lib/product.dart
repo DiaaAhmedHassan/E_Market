@@ -72,4 +72,17 @@ class Product {
     _category = category;
   }
 
+  productToMap(int requiredAmount){
+    return {
+      "title": _title, 
+      "price": _price,
+      "description": _description,
+      "rating": _rating,
+      "availableAmount": _availableAmount - requiredAmount,
+      "imageUrl": _imageUrl,
+      "requiredAmount": requiredAmount,
+      "category": category
+    };
+  }
+
 }

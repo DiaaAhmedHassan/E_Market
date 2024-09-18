@@ -52,6 +52,24 @@ class _HomePageState extends State<HomePage> {
     categories.addAll(categorySnapshot.docs);    
   }
 
+
+   Future<void> filterCategory(int i) async {
+    print("on tap pressed =========");
+    print("${categories[i]['title']} selected =============");
+    setState(() {
+      
+      selectedCategory = categories[i]['title'];
+    });
+    
+      print(categories[i]['title']);
+    //Todo filter the categories with firebase 
+      productSnapshot =await FirebaseFirestore.instance.collection("products").where("category", arrayContains: categories[i]['title']).get();
+      
+      await getProductData();
+      print(productSnapshot!.docs);
+    setState(() {});
+  }
+
   List offers = [];
 
   getOffersData() async{
@@ -100,6 +118,7 @@ class _HomePageState extends State<HomePage> {
     print("icon clicked");
     print(val);
     
+    if(val.isEmpty){
     List productsTitle = [for(var product in products ) product.title];
 
     final fuse = Fuzzy(productsTitle, options: FuzzyOptions(
@@ -114,15 +133,29 @@ class _HomePageState extends State<HomePage> {
       print("n score: ${r.score}::n title ${r.item}");
       QuerySnapshot snapshot = await FirebaseFirestore.instance.collection("products").where("title", isEqualTo: r.item).get(); 
       
-      snapshot.docs.forEach((doc){
+      for (var doc in snapshot.docs) {
         results.add(doc['title']);
-      });
+      }
 
       productSnapshot = await FirebaseFirestore.instance.collection("products").where("title", whereIn: results).get();
       getProductData();
     });
   
-    setState(() {  });
+    setState(() {  });}else{isSearching = false;}
+  }
+
+  Future<void> searchProduct() async {
+    if(isSearching){
+      fuzzySearch(searchBarController.text);
+      isSearching = false;
+      setState(() {});
+    }else {
+    isSearching = true;
+    productSnapshot =await FirebaseFirestore.instance.collection('products').get();
+    searchBarController.text = "";
+    getProductData();
+    setState(() {});
+    }
   }
   
 
@@ -137,6 +170,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
+//app GUI starts here
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,6 +185,10 @@ class _HomePageState extends State<HomePage> {
           },
           controller: searchBarController,
           textInputAction: TextInputAction.search,
+          onSubmitted: (value){
+            searchProduct();
+          },
+
           decoration: InputDecoration(
               filled: true,
               fillColor: Colors.grey[200],
@@ -160,17 +198,7 @@ class _HomePageState extends State<HomePage> {
               contentPadding: const EdgeInsets.all(5),
               suffixIcon: IconButton(
                   onPressed: () async{
-                    if(isSearching){
-                      fuzzySearch(searchBarController.text);
-                      isSearching = false;
-                      setState(() {});
-                    }else {
-                    isSearching = true;
-                    productSnapshot =await FirebaseFirestore.instance.collection('products').get();
-                    searchBarController.text = "";
-                    getProductData();
-                    setState(() {});
-                    }
+                    await searchProduct();
                   },
                   icon:isSearching? const Icon(
                     Icons.search,
@@ -356,20 +384,7 @@ class _HomePageState extends State<HomePage> {
                             icon: Image.network(categories[i]['iconUrl']),  
                             isSelected: selectedCategory == categories[i]['title'],
                             onTap: ()async{
-                              print("on tap pressed =========");
-                              print("${categories[i]['title']} selected =============");
-                              setState(() {
-                                
-                                selectedCategory = categories[i]['title'];
-                              });
-                              
-                                print(categories[i]['title']);
-                              //Todo filter the categories with firebase 
-                                productSnapshot =await FirebaseFirestore.instance.collection("products").where("category", arrayContains: categories[i]['title']).get();
-                                
-                                await getProductData();
-                                print(productSnapshot!.docs);
-                              setState(() {});
+                              await filterCategory(i);
                             },
                             ),
                            const SizedBox(width: 20,),
@@ -414,6 +429,9 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  
+
   
   
 }

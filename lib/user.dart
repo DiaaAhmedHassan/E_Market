@@ -147,4 +147,5 @@ class MarketUser {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
   }
+
 }

@@ -29,8 +29,10 @@ class MyApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return  MaterialApp(
-      theme: ThemeData(appBarTheme: const AppBarTheme(
-        titleTextStyle: TextStyle(color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold),
+      theme: ThemeData(
+        fontFamily: 'Dosis',
+        appBarTheme: const AppBarTheme(
+        titleTextStyle: TextStyle(color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold, fontFamily: "Dosis"),
         
       )),
       home:  FirebaseAuth.instance.currentUser == null ?const LogIn(): const HomePage(),

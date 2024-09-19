@@ -13,38 +13,26 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<CartProduct> cartProducts = [];
 
-  getUserCart() async {
-    String userId = FirebaseAuth.instance.currentUser!.uid;
-    DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    List products = snapshot['cart'];
-    products.forEach((product) => cartProducts.add(CartProduct(
-        title: product['title'],
-        price: (product['price'] as num).toDouble(),
-        description: product['description'],
-        rating: product['rating'],
-        availableAmount: product['availableAmount'],
-        imageUrl: product['imageUrl'],
-        category: product['category'], 
-        requiredAmount: product['requiredAmount'])));
+  removeElement(String field, int index) async{
+   DocumentReference<Map<String, dynamic>> documentReference =await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid);
+   DocumentSnapshot<Map<String, dynamic>> snapshot =await documentReference.get();
+   List<dynamic> cart = List.from(snapshot.data()?[field]??[]);
 
-    setState(() {});
+   cart.removeAt(index);
+
+
+   await documentReference.update({field: cart});
+
+   
   }
 
-  @override
-  void initState() {
-    print(cartProducts);
-    getUserCart();
-    print(cartProducts);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.blue),
+        iconTheme: const IconThemeData(color: Colors.blue),
         title: const Row(
           children: [
             Text('Cart'),
@@ -64,22 +52,45 @@ class _CartPageState extends State<CartPage> {
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                itemCount: cartProducts.length,
-                shrinkWrap: true,
-                itemBuilder: (context, i) {
-                  return Card(
-                    child: ListTile(
-                      leading: Image.network(cartProducts[i].imageUrl),
-                      title: Text("${cartProducts[i].requiredAmount}X ${cartProducts[i].title}"),
-                      subtitle: Text("${(cartProducts[i].price)*cartProducts[i].availableAmount} \$"),
-                      trailing: MaterialButton(
-                        onPressed: () {},
-                        child: Text("Remove"),
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
+                builder: (context, snapshot){
+                  if(!snapshot.hasData){
+                    return Center(child: CircularProgressIndicator(color: Colors.blue,),);
+                  }
+
+                  List<dynamic> cartData = snapshot.data?['cart']??[];
+                  List<CartProduct> cartProducts = cartData.map((data) => CartProduct.fromMap(data)).toList();
+                  
+                return cartProducts.isEmpty?
+                 Center(child:
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset("images/E_comm_logo.png"),
+                      Text("Your cart is empty", style: TextStyle(fontSize: 30, fontWeight:FontWeight.bold, color: Colors.blue),)
+                    ],
+                  ))
+                 :ListView.builder(
+                  itemCount: cartData.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, i) {
+                    var currentProduct = cartProducts[i];
+                    return Card(
+                      child: ListTile(
+                        leading:Image.network(currentProduct.imageUrl),
+                        title: Text("${currentProduct.requiredAmount}X ${currentProduct.title}"),
+                        subtitle: Text("${(currentProduct.price)*currentProduct.requiredAmount} \$"),
+                        trailing: MaterialButton(
+                          onPressed: () {
+                            removeElement("cart", i);
+                          },
+                          child: const Text("Remove"),
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                );}
               ),
             ),
             Container(
@@ -87,14 +98,14 @@ class _CartPageState extends State<CartPage> {
               width: double.infinity,
               child: MaterialButton(
                 onPressed: () {},
-                child: Text(
-                  "Buy now",
-                  style: TextStyle(fontSize: 24),
-                ),
                 color: Colors.blue,
                 textColor: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "Buy now",
+                  style: TextStyle(fontSize: 24),
+                ),
               ),
             )
           ],

@@ -173,12 +173,12 @@ class _ItemDetailsState extends State<ItemDetails> {
                               int intVal = int.parse(val);
                               if (intVal > widget.data.availableAmount) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
+                                    const SnackBar(
                                         content: Text("invalid quantity")));
                                 amount = widget.data.availableAmount;
                               } else if (intVal < 1) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
+                                    const SnackBar(
                                         content: Text("invalid quantity")));
                                 amount = 1;
                               } else {

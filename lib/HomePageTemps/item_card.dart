@@ -30,7 +30,7 @@ class ItemCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Flexible(
-                    child: Text(itemName, style: const TextStyle(fontWeight: FontWeight.bold,), overflow: TextOverflow.ellipsis,)),
+                    child: Text(itemName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20), overflow: TextOverflow.ellipsis,)),
                   Flexible(child: Text("$price \$",)),
 
                   Row(children: [

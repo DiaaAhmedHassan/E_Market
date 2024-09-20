@@ -115,7 +115,7 @@ class _CartPageState extends State<CartPage> {
                               return Card(
                                 child: ListTile(
                                   onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ItemDetails(data: currentProduct)));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ItemDetails(data: currentProduct, isComingFromCart: true, cartAmount:currentAmount,)));
                                   },
                                     leading:
                                         Image.network(currentProduct.imageUrl),
@@ -319,11 +319,5 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  void _updateAmount(int i) {
-    try {
-      updateRequiredAmount(i, int.parse(_amountController.text));
-    } catch (e) {
-      print("Error ========= $e ==========");
-    }
-  }
+ 
 }

@@ -3,9 +3,11 @@ import 'package:e_market/user.dart';
 import 'package:flutter/material.dart';
 
 class ItemDetails extends StatefulWidget {
-  const ItemDetails({super.key, this.data});
+  const ItemDetails({super.key, this.data, required this.isComingFromCart, this.cartAmount});
 
   final data;
+  final bool isComingFromCart;
+  final int? cartAmount;
 
   @override
   State<ItemDetails> createState() => _ItemDetailsState();
@@ -121,7 +123,11 @@ class _ItemDetailsState extends State<ItemDetails> {
                 "${widget.data.description}",
               ),
             ),
-            Column(
+           widget.isComingFromCart?
+            Container(
+              padding:const EdgeInsets.all(10),
+              child: Row(children: [Text("Required amount: ${widget.cartAmount}", style: TextStyle(fontSize: 20,),)],))
+            : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
@@ -135,7 +141,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                 ),
                 Container(
                   margin: const EdgeInsets.all(20),
-                  child: Row(
+                  child:Row(
                     children: [
                       IconButton(
                         onPressed: () {
@@ -219,7 +225,9 @@ class _ItemDetailsState extends State<ItemDetails> {
               width: 400,
               height: 50,
               margin: const EdgeInsets.all(20),
-              child: MaterialButton(
+              child:widget.isComingFromCart?
+                SizedBox()
+               :MaterialButton(
                   color: Colors.blue,
                   textColor: Colors.white,
                   onPressed: () {

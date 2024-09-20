@@ -1,11 +1,8 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_market/Auths/input_fields.dart';
 import 'package:e_market/cart_product.dart';
 import 'package:e_market/details_page.dart';
-import 'package:e_market/product.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class CartPage extends StatefulWidget {

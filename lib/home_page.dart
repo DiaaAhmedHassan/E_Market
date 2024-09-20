@@ -412,6 +412,7 @@ class _HomePageState extends State<HomePage> {
                           MaterialPageRoute(
                               builder: (context) => ItemDetails(
                                     data: products[i],
+                                    isComingFromCart: false,
                                   )));
                     },
                     child: ItemCard(

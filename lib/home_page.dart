@@ -271,7 +271,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     ListTile(
                       onTap: () {
-                        // Navigate to Profile
+                        Navigator.of(context).pushNamed("user_profile");
                       },
                       title: const Text("Profile"),
                       leading: const Icon(Icons.person),

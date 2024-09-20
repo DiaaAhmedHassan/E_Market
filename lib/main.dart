@@ -2,6 +2,7 @@ import 'package:e_market/Auths/login_form.dart';
 import 'package:e_market/Auths/registration.dart';
 import 'package:e_market/cart_page.dart';
 import 'package:e_market/home_page.dart';
+import 'package:e_market/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget{
       theme: ThemeData(
         fontFamily: 'Dosis',
         appBarTheme: const AppBarTheme(
+          iconTheme: IconThemeData(color: Colors.blue),
         titleTextStyle: TextStyle(color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold, fontFamily: "Dosis"),
         
       )),
@@ -41,7 +43,8 @@ class MyApp extends StatelessWidget{
         "home_page": (route)=> const HomePage(),
         "login_page": (route)=> const LogIn(),
         "registration_page": (route)=> const Registration(),
-        "cart_page": (route) => const CartPage()
+        "cart_page": (route) => const CartPage(),
+        "user_profile": (route) => const UserProfile()
       },
     );
   }

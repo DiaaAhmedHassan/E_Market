@@ -10,6 +10,7 @@ ios/Runner.xcworkspace/
 ios/Pods/
 android/.gradle/
 android/app/build/
+fonts/
 # IntelliJ related
 .idea/
 *.iml

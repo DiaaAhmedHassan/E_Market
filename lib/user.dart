@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_market/cart_product.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -146,6 +147,17 @@ class MarketUser {
   signOut() async {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
+  }
+
+  addProductToCart(CartProduct product){
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    Map<String, dynamic> productData = product.toMap();
+    try{
+
+    FirebaseFirestore.instance.collection("users").doc(userId).set({"cart":  FieldValue.arrayUnion([productData])}, SetOptions(merge: true));
+    }catch(e){
+      print("Product addition failed");
+    }
   }
 
 }

@@ -11,7 +11,7 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-    
+    height: 200,
       decoration: BoxDecoration(
           color: Colors.grey[200], borderRadius: BorderRadius.circular(10),
           ),
@@ -20,18 +20,18 @@ class ItemCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.network(imagePath, width: 130, height: 110, fit: BoxFit.fill,),
+          Image.network(imagePath, width: 100, height: 95, fit: BoxFit.fill,),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(5),
               color: Colors.grey[100],
               width: 200,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Flexible(child: Text(itemName, style: const TextStyle(fontWeight: FontWeight.bold,), overflow: TextOverflow.ellipsis,)),
+                  Flexible(
+                    child: Text(itemName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20), overflow: TextOverflow.ellipsis,)),
                   Flexible(child: Text("$price \$",)),
-                  const SizedBox(height: 2,),
 
                   Row(children: [
                     ...List.generate(5, (i){

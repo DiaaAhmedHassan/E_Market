@@ -1,29 +1,37 @@
+import 'package:e_market/cart_product.dart';
+import 'package:e_market/user.dart';
 import 'package:flutter/material.dart';
 
 class ItemDetails extends StatefulWidget {
-  const ItemDetails({super.key, this.product});
+  const ItemDetails({super.key, this.data, required this.isComingFromCart, this.cartAmount});
 
-   final product;
-
+  final data;
+  final bool isComingFromCart;
+  final int? cartAmount;
 
   @override
   State<ItemDetails> createState() => _ItemDetailsState();
 }
 
 class _ItemDetailsState extends State<ItemDetails> {
-
-
   // ignore: prefer_final_fields
   TextEditingController _amountController = TextEditingController();
+
+  int amount = 1;
+
+  var product;
+  addCurrentProductToCart(CartProduct product) {
+    var user = MarketUser();
+    user.addProductToCart(product);
+  }
 
   @override
   void initState() {
     super.initState();
-    // Initialize the controller with the initial value
-    print(widget.product);
+    print(widget.data.title);
     _amountController.text = '1';
-    
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +43,6 @@ class _ItemDetailsState extends State<ItemDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
-              
               children: [
                 Container(
                   margin: const EdgeInsets.all(20),
@@ -52,28 +59,33 @@ class _ItemDetailsState extends State<ItemDetails> {
                             blurRadius: 20,
                             offset: Offset(0, 10)),
                       ]),
-                  child: Image.network("${widget.product.imageUrl}"),
+                  child: Image.network("${widget.data.imageUrl}"),
                 ),
                 Positioned(
                   right: 20,
                   top: 20,
                   child: Container(
                     decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(topRight: Radius.circular(20), bottomLeft: Radius.circular(20)),
-                      color:  Color.fromARGB(142, 0, 0, 0),
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(20),
+                          bottomLeft: Radius.circular(20)),
+                      color: Color.fromARGB(142, 0, 0, 0),
                     ),
                     height: 35,
                     alignment: Alignment.center,
                     padding: const EdgeInsets.only(left: 40, right: 20),
-                    child:  Text("Available amount: ${widget.product.availableAmount}", style: const TextStyle(color: Colors.white),),
+                    child: Text(
+                      "Available amount: ${widget.data.availableAmount}",
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
             ),
             Container(
               padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
-              child:   Text(
-                "${widget.product.title}",
+              child: Text(
+                "${widget.data.title}",
                 style: const TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
@@ -81,30 +93,41 @@ class _ItemDetailsState extends State<ItemDetails> {
               ),
             ),
             Container(
-                  padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
-                  child:   Text("${widget.product.price} \$", style: const TextStyle(color: Color.fromARGB(255, 0, 75, 141), fontSize: 30)),
-                ),
+              padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
+              child: Text("${widget.data.price} \$",
+                  style: const TextStyle(
+                      color: Color.fromARGB(255, 0, 75, 141), fontSize: 30)),
+            ),
             Container(
                 padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
                 child: Row(
                   children: [
                     ...List.generate(5, (i) {
-                       return  widget.product.rating<=i? const Icon(
-                        Icons.star_outline,
-                        color: Colors.amber,
-                        size: 35,
-                      ):
-                      const Icon(Icons.star, color: Colors.amber, size: 35,);
+                      return widget.data.rating <= i
+                          ? const Icon(
+                              Icons.star_outline,
+                              color: Colors.amber,
+                              size: 35,
+                            )
+                          : const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 35,
+                            );
                     })
                   ],
                 )),
             Container(
               padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
-              child: Text( 
-                "${widget.product.description}",
+              child: Text(
+                "${widget.data.description}",
               ),
             ),
-            Column(
+           widget.isComingFromCart?
+            Container(
+              padding:const EdgeInsets.all(10),
+              child: Row(children: [Text("Required amount: ${widget.cartAmount}", style: TextStyle(fontSize: 20,),)],))
+            : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
@@ -118,10 +141,17 @@ class _ItemDetailsState extends State<ItemDetails> {
                 ),
                 Container(
                   margin: const EdgeInsets.all(20),
-                  child: Row(
+                  child:Row(
                     children: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (amount > 1) {
+                            amount--;
+                            setState(() {
+                              _amountController.text = "$amount";
+                            });
+                          }
+                        },
                         icon: const Icon(Icons.minimize),
                         color: Colors.blue,
                       ),
@@ -130,22 +160,59 @@ class _ItemDetailsState extends State<ItemDetails> {
                         height: 40,
                         child: TextField(
                           controller: _amountController,
+                          onSubmitted: (val) {
+                            int intVal = int.parse(val);
+                            if (intVal > widget.data.availableAmount) {
+                              setState(() {
+                                _amountController.text =
+                                    "${widget.data.availableAmount}";
+                              });
+                            } else if (intVal < 1) {
+                              setState(() {
+                                _amountController.text = "1";
+                              });
+                            }
+                          },
+                          onChanged: (val) {
+                            if (val.isNotEmpty) {
+                              int intVal = int.parse(val);
+                              if (intVal > widget.data.availableAmount) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("invalid quantity")));
+                                amount = widget.data.availableAmount;
+                              } else if (intVal < 1) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("invalid quantity")));
+                                amount = 1;
+                              } else {
+                                amount = intVal;
+                              }
+                            }
+                          },
                           textAlign: TextAlign.center,
                           maxLines: 1,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            contentPadding: const EdgeInsets.all(5),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                borderSide: const BorderSide(color: Colors.blue)),
-                                focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.blue))
-                          ),
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              contentPadding: const EdgeInsets.all(5),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                  borderSide:
+                                      const BorderSide(color: Colors.blue)),
+                              focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.blue))),
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (amount < widget.data.availableAmount) amount++;
+                          setState(() {
+                            _amountController.text = "$amount";
+                          });
+                        },
                         icon: const Icon(Icons.add),
                         color: Colors.blue,
                       )
@@ -158,10 +225,27 @@ class _ItemDetailsState extends State<ItemDetails> {
               width: 400,
               height: 50,
               margin: const EdgeInsets.all(20),
-              child: MaterialButton(
+              child:widget.isComingFromCart?
+                SizedBox()
+               :MaterialButton(
                   color: Colors.blue,
                   textColor: Colors.white,
-                  onPressed: () {},
+                  onPressed: () {
+                        print("Function called");
+
+                    product = CartProduct(
+                        title: widget.data.title,
+                        price: widget.data.price,
+                        description: widget.data.description,
+                        rating: widget.data.rating,
+                        availableAmount: widget.data.availableAmount,
+                        imageUrl: widget.data.imageUrl,
+                        category: widget.data.category,
+                        requiredAmount: amount);
+                        print("Conversion done");
+                    addCurrentProductToCart(product);
+                    print("product added");
+                  },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

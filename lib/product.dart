@@ -1,12 +1,12 @@
 
 class Product {
-  String _title;
+  final String _title;
   double _price;
-  String _description;
+  final String _description;
   int _rating;
-  int _availableAmount;
-  String _imageUrl;
-  List _category;
+  final int _availableAmount;
+  final String _imageUrl;
+  final List _category;
 
   Product({
     required String title,
@@ -18,14 +18,13 @@ class Product {
     required List category,
 
   }):
-    _title = title,
-    _price = price,
-    _description = description,
-    _rating = rating,
-    _availableAmount = availableAmount,
-    _imageUrl = imageUrl,
-    _category = category;
-  
+  _title = title, 
+  _price = price, 
+  _description = description,
+  _rating = rating,
+  _availableAmount = availableAmount,
+  _imageUrl = imageUrl,
+  _category = category;
 
   String get title => _title;
   double get price => _price;
@@ -35,41 +34,32 @@ class Product {
   String get imageUrl => _imageUrl;
   List get category => _category;
 
-  set title(String title){
-    _title = title;
-  }
-
   set price(double price){
     if(price < 0){
-      throw ArgumentError("Price can't be less than 0");
-    }
+      throw ArgumentError("Price should be more than 0");
+    }else{
     _price = price;
-  }   
-
-  set description(String description){
-    _description = description;
-  }
+    }
+  } 
 
   set rating(int rating){
-    if(rating < 0 || rating > 5){
-      throw ArgumentError("Invalid rating value");
+    if(rating<0 || rating>5){
+      throw ArgumentError("Rating should be between 0 and 5");
+    }else{
+      _rating = rating;
     }
-    _rating = rating;
   }
 
-  set availableAmount(int availableAmount){
-    if(availableAmount<0){
-      throw ArgumentError("Available amount should be more than zero");
-    }
-    _availableAmount = availableAmount;
-  }
-
-  set imageUrl(String imageUrl){
-    _imageUrl = imageUrl;
-  }
-
-  set category(List category){
-    _category = category;
+  productToMap(){
+    return {
+      "title": _title, 
+      "price": _price,
+      "description": _description,
+      "rating": _rating,
+      "availableAmount": _availableAmount,
+      "imageUrl": _imageUrl,
+      "category":_category
+    };
   }
 
 }

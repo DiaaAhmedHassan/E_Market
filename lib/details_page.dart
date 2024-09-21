@@ -126,7 +126,7 @@ class _ItemDetailsState extends State<ItemDetails> {
            widget.isComingFromCart?
             Container(
               padding:const EdgeInsets.all(10),
-              child: Row(children: [Text("Required amount: ${widget.cartAmount}", style: TextStyle(fontSize: 20,),)],))
+              child: Row(children: [Text("Required amount: ${widget.cartAmount}", style: const TextStyle(fontSize: 20,),)],))
             : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -226,7 +226,7 @@ class _ItemDetailsState extends State<ItemDetails> {
               height: 50,
               margin: const EdgeInsets.all(20),
               child:widget.isComingFromCart?
-                SizedBox()
+                const SizedBox()
                :MaterialButton(
                   color: Colors.blue,
                   textColor: Colors.white,

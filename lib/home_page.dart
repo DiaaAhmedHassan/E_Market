@@ -233,7 +233,7 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: Image.network(
-                            user.getImage(),
+                            user.imageUrl!,
                             width: 80,
                             height: 80,
                             fit: BoxFit.cover,
@@ -247,7 +247,7 @@ class _HomePageState extends State<HomePage> {
                               Text(
                                 maxLines: 1,
                                 softWrap: false,
-                                user.getName(),
+                                user.name!,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 24,

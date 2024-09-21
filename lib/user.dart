@@ -4,63 +4,45 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class MarketUser {
-  String? id;
-  String? email;
-  String? password;
-  String? name;
-  String? phoneNumber;
-  String? imageUrl;
+  String? _id;
+  String? _email;
+  String? _password;
+  String? _name;
+  String? _phoneNumber;
+  String? _imageUrl;
 
-  MarketUser(
-      {this.id, this.email, this.password, this.name, this.phoneNumber, this.imageUrl});
+  MarketUser({
+    String? id,
+    String? email,
+    String? password,
+    String? name,
+    String? phoneNumber,
+    String? imageUrl,
+  })  : _id = id,
+        _email = email,
+        _password = password,
+        _name = name,
+        _phoneNumber = phoneNumber,
+        _imageUrl = imageUrl;
 
-  setId(String id){
-    this.id = id;
-  }    
+  String? get id => _id;
+  set id(String? value) => _id = value;
 
-  getId(){
-    return id;
-  }
+  String? get email => _email;
+  set email(String? value) => _email = value;
 
-  setName(String name) {
-    this.name = name;
-  }
+  String? get password => _password;
+  set password(String? value) => _password = value;
 
-  getName() {
-    return name;
-  }
+  String? get name => _name;
+  set name(String? value) => _name = value;
 
-  setEmail(String email){
-    this.email = email;
-  }
+  String? get phoneNumber => _phoneNumber;
+  set phoneNumber(String? value) => _phoneNumber = value;
 
-  getEmail(){
-    return email;
-  }
+  String? get imageUrl => _imageUrl;
+  set imageUrl(String? value) => _imageUrl = value;
 
-  setPassword(String password){
-    this.password = password;
-  }
-
-  getPassword(){
-    return password;
-  }
-
-  setPhoneNumber(String phoneNumber) {
-    this.phoneNumber = phoneNumber;
-  }
-
-  getPhoneNumber() {
-    return phoneNumber;
-  }
-
-   setImage(String imageUrl){
-    this.imageUrl = imageUrl;
-  }
-
-  getImage(){
-    return imageUrl;
-  }
 
   Future<bool> register() async {
     try {
@@ -86,52 +68,72 @@ class MarketUser {
   }
 
   addUserToDatabase() {
-   String userId = FirebaseAuth.instance.currentUser!.uid;
-  DocumentReference users = FirebaseFirestore.instance.collection("users").doc(userId);
-    
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    DocumentReference users =
+        FirebaseFirestore.instance.collection("users").doc(userId);
+
     users.set({
       "userId": userId,
       "username": name,
       "phoneNumber": phoneNumber,
-      "imageUrl": imageUrl ?? "https://firebasestorage.googleapis.com/v0/b/e-market-cdf14.appspot.com/o/avatar.png?alt=media&token=85646f6b-af57-413d-886d-8eb3557b7f1e"
+      "imageUrl": imageUrl ??
+          "https://firebasestorage.googleapis.com/v0/b/e-market-cdf14.appspot.com/o/avatar.png?alt=media&token=85646f6b-af57-413d-886d-8eb3557b7f1e"
     });
   }
 
-  Future<bool> signInUsingGoogle()async{
-     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  Future<bool> signInUsingGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    if (googleUser == null) {
+      return false;
+    }
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    final bool isNewUser = userCredential.additionalUserInfo!.isNewUser;
+    print("is new user : ========= $isNewUser");
+    // Once signed in, return the UserCredential
+    if(isNewUser){
+    addGoogleUserToDatabase(
+        FirebaseAuth.instance.currentUser!.displayName,
+        phoneNumber ?? "none", 
+        FirebaseAuth.instance.currentUser!.photoURL);
+      }else{
+        print("Existing user");
+      }
     
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
-
-          if(googleUser == null){
-            return false;
-          }
-
-    
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-
-      // Once signed in, return the UserCredential
-     await FirebaseAuth.instance.signInWithCredential(credential);
-      addGoogleUserToDatabase(FirebaseAuth.instance.currentUser!.displayName, phoneNumber??"none", FirebaseAuth.instance.currentUser!.photoURL);
-     return true;
+    return true;
   }
 
-  addGoogleUserToDatabase(String? name, String? phone, String? imageUrl){
+  addGoogleUserToDatabase(String? name, String? phone, String? imageUrl) {
     String userId = FirebaseAuth.instance.currentUser!.uid;
-    DocumentReference users = FirebaseFirestore.instance.collection("users").doc(userId);
-    users.set(
-      {
+    DocumentReference users =
+        FirebaseFirestore.instance.collection("users").doc(userId);
+    users.set({
       "userId": userId,
       "username": name,
-      "PhoneNumber": phone??"none",
+      "PhoneNumber": phone ?? "none",
+      "cart": [],
       "imageUrl": imageUrl
     });
   }
+
+  showExistingGoogleUser(String? name, String? phone, String? imageUrl, List? cartItems)async{
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    DocumentReference users = FirebaseFirestore.instance.collection("users").doc(userId);
+    DocumentSnapshot snapshot =await users.get();
+   print(snapshot['username']);
+  }
+
   Future<bool> signIn() async {
     try {
       final credential = await FirebaseAuth.instance
@@ -149,15 +151,22 @@ class MarketUser {
     await GoogleSignIn().signOut();
   }
 
-  addProductToCart(CartProduct product){
+  addProductToCart(CartProduct product) {
     String userId = FirebaseAuth.instance.currentUser!.uid;
     Map<String, dynamic> productData = product.toMap();
-    try{
-
-    FirebaseFirestore.instance.collection("users").doc(userId).set({"cart":  FieldValue.arrayUnion([productData])}, SetOptions(merge: true));
-    }catch(e){
+    try {
+      FirebaseFirestore.instance.collection("users").doc(userId).set({
+        "cart": FieldValue.arrayUnion([productData])
+      }, SetOptions(merge: true));
+    } catch (e) {
       print("Product addition failed");
     }
   }
 
+  updateProfile(String newImage, String newUserName, String newPhoneNumber){
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    DocumentReference user = FirebaseFirestore.instance.collection("users").doc(userId);
+    user.update({"imageUrl": newImage, "username": newUserName, "PhoneNumber": newPhoneNumber});
+
+  }
 }

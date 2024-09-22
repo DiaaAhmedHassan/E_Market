@@ -16,8 +16,9 @@ class MessageView extends StatelessWidget {
       children: [
          Text("$date"),
         Container(
+          
           padding: const EdgeInsets.all(15),
-          constraints:const BoxConstraints(maxWidth: 200),
+          constraints:const BoxConstraints(maxWidth: 250),
           decoration:  BoxDecoration(
             color:isOutGoing? Colors.blue: Colors.white,
             boxShadow:const [BoxShadow(color: Colors.blueGrey, blurRadius: 20, offset: Offset(10, 10))],
@@ -31,9 +32,10 @@ class MessageView extends StatelessWidget {
             children: [
               Text("$message", style: TextStyle(color:isOutGoing? Colors.white: Colors.black, fontSize: 18), ),
               const SizedBox(height: 5,),
-              Text("$time", textAlign:isOutGoing? TextAlign.end: TextAlign.start, style: TextStyle(color: isOutGoing? Colors.white: Colors.black),),
+              Text("$time", textAlign:isOutGoing? TextAlign.end: TextAlign.start, style: TextStyle(color: isOutGoing? Colors.white: Colors.black, fontSize: 12),),
             ],
           )),
+          const SizedBox(height: 20,),
       ],
     );
   }

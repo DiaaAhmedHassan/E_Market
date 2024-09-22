@@ -114,11 +114,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void fuzzySearch(String val){
+  void fuzzySearch(String val)async{
     print("icon clicked");
     print(val);
     
-    if(val.isEmpty){
+    if(val.isNotEmpty){
     List productsTitle = [for(var product in products ) product.title];
 
     final fuse = Fuzzy(productsTitle, options: FuzzyOptions(
@@ -127,21 +127,23 @@ class _HomePageState extends State<HomePage> {
       tokenize: true 
     ));
 
-    final result = fuse.search(val);
+    final resultList = fuse.search(val);
     List results = [];
-    result.forEach((r)async{
-      print("n score: ${r.score}::n title ${r.item}");
+    for(var r in resultList) {
+       print("n score: ${r.score}::n title ${r.item}");
       QuerySnapshot snapshot = await FirebaseFirestore.instance.collection("products").where("title", isEqualTo: r.item).get(); 
       
       for (var doc in snapshot.docs) {
         results.add(doc['title']);
       }
 
+    }
       productSnapshot = await FirebaseFirestore.instance.collection("products").where("title", whereIn: results).get();
       getProductData();
-    });
   
-    setState(() {  });}else{isSearching = false;}
+    setState(() {  });}else{isSearching = false; setState(() {
+      
+    });}
   }
 
   Future<void> searchProduct() async {
@@ -185,8 +187,8 @@ class _HomePageState extends State<HomePage> {
           },
           controller: searchBarController,
           textInputAction: TextInputAction.search,
-          onSubmitted: (value){
-            searchProduct();
+          onSubmitted: (value)async{
+            await searchProduct();
           },
 
           decoration: InputDecoration(

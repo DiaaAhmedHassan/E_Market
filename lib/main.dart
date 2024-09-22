@@ -1,6 +1,7 @@
 import 'package:e_market/Auths/login_form.dart';
 import 'package:e_market/Auths/registration.dart';
 import 'package:e_market/cart_page.dart';
+import 'package:e_market/chat/chat.dart';
 import 'package:e_market/home_page.dart';
 import 'package:e_market/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -44,7 +45,8 @@ class MyApp extends StatelessWidget{
         "login_page": (route)=> const LogIn(),
         "registration_page": (route)=> const Registration(),
         "cart_page": (route) => const CartPage(),
-        "user_profile": (route) => const UserProfile()
+        "user_profile": (route) => const UserProfile(),
+        "customer_support": (route) => const Chat(),
       },
     );
   }

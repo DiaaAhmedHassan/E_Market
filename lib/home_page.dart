@@ -285,7 +285,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     ListTile(
                       onTap: () {
-                        // Navigate to Customer Support
+                        Navigator.of(context).pushNamed("customer_support");
                       },
                       title: const Text("Customer support"),
                       leading: const Icon(Icons.chat),

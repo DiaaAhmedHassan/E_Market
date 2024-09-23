@@ -1,4 +1,5 @@
 import 'package:e_market/cart_product.dart';
+import 'package:e_market/reviews.dart';
 import 'package:e_market/user.dart';
 import 'package:flutter/material.dart';
 
@@ -101,22 +102,29 @@ class _ItemDetailsState extends State<ItemDetails> {
             ),
             Container(
                 padding: const EdgeInsets.only(left: 40, top: 20, right: 20),
-                child: Row(
-                  children: [
-                    ...List.generate(5, (i) {
-                      return widget.data.rating <= i
-                          ? const Icon(
-                              Icons.star_outline,
-                              color: Colors.amber,
-                              size: 35,
-                            )
-                          : const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 35,
-                            );
-                    })
-                  ],
+                child: InkWell(
+                  onTap: (){
+                    showModalBottomSheet(context: context, builder: (context){
+                      return ReviewsView();
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      ...List.generate(5, (i) {
+                        return widget.data.rating <= i
+                            ? const Icon(
+                                Icons.star_outline,
+                                color: Colors.amber,
+                                size: 35,
+                              )
+                            : const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 35,
+                              );
+                      })
+                    ],
+                  ),
                 )),
             Container(
               padding: const EdgeInsets.only(left: 40, top: 20, right: 20),

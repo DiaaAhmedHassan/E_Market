@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage> {
      products.clear();
     for (var i in productSnapshot!.docs) {
       products.add(Product(
+          id: i.id,
           title: i.get('title'),
           price: (i.get('price') as int).toDouble(),
           description: i.get('description'),
@@ -103,6 +104,7 @@ class _HomePageState extends State<HomePage> {
   Timer? _scrollTimer;
   scrollOffersAutomatically() {
     _scrollTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (_scrollControl.hasClients) {
       final newPosition = _scrollControl.position.pixels + 100;
       if (newPosition >= _scrollControl.position.maxScrollExtent) {
         _scrollControl.animateTo(0,
@@ -111,6 +113,7 @@ class _HomePageState extends State<HomePage> {
         _scrollControl.animateTo(newPosition,
             duration: const Duration(seconds: 2), curve: Curves.linear);
       }
+    }
     });
   }
 

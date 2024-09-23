@@ -2,6 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_market/cart_product.dart';
 import 'package:e_market/details_page.dart';
+import 'package:e_market/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -45,6 +46,49 @@ class _CartPageState extends State<CartPage> {
     await documentReference.update({"cart": cart});
   }
 
+  double calculateTotalPrice(List<CartProduct> cartProducts) {
+    double totalPrice = 0;
+    for (var product in cartProducts) {
+      totalPrice += (product.price) * (product.requiredAmount);
+    }
+
+    return totalPrice;
+  }
+
+  void buyCartProducts(
+      List<CartProduct> cartProducts, double totalPrice, BuildContext context) {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    var user;
+    user = MarketUser();
+    FirebaseFirestore.instance.collection("Orders").add({
+      "userId": userId,
+      "products": cartProducts.map((e) => e.toMap()).toList(),
+      "totalPrice": totalPrice,
+      "date": FieldValue.serverTimestamp(),
+      "paymentMethod": "cash"
+    });
+
+    for (var product in cartProducts) {
+      FirebaseFirestore.instance.collection("products").doc(product.id).update(
+          {"availableAmount": FieldValue.increment(-(product.requiredAmount))});
+    }
+
+    cartProducts.clear();
+    totalPrice = 0;
+    user.emptyCart();
+
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      title: "Successful operation",
+      desc:"Your order is on its way and will arrive in a few days. Please be ready to pay with cash when it gets delivered. Thank you for shopping with us!",
+      btnOkOnPress: () {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil("home_page", (route) => false);
+      },
+    ).show();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +127,7 @@ class _CartPageState extends State<CartPage> {
               List<dynamic> cartData = snapshot.data?['cart'] ?? [];
               List<CartProduct> cartProducts =
                   cartData.map((data) => CartProduct.fromMap(data)).toList();
-
+              double totalPrice = calculateTotalPrice(cartProducts);
               return cartProducts.isEmpty
                   ? Center(
                       child: Column(
@@ -111,9 +155,16 @@ class _CartPageState extends State<CartPage> {
                               _amountController.text = "$currentAmount";
                               return Card(
                                 child: ListTile(
-                                  onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ItemDetails(data: currentProduct, isComingFromCart: true, cartAmount:currentAmount,)));
-                                  },
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => ItemDetails(
+                                                    data: currentProduct,
+                                                    isComingFromCart: true,
+                                                    cartAmount: currentAmount,
+                                                  )));
+                                    },
                                     leading:
                                         Image.network(currentProduct.imageUrl),
                                     title: Text(
@@ -198,31 +249,22 @@ class _CartPageState extends State<CartPage> {
                                                                                       icon: const Icon(Icons.add)),
                                                                                 ],
                                                                               ),
-
-                                                                               MaterialButton(
-                                                                          onPressed: () {
-  
-                                                                              updateRequiredAmount(i, int.parse(_amountController.text));
-                                                                              Navigator.of(context).pop();
-                                                                              
-                                                                            
-                                                                          },
-                                                                          color:
-                                                                              Colors.blue,
-                                                                          textColor:
-                                                                              Colors.white,
-                                                                          child:
-                                                                              const Text(
-                                                                            "Update",
-                                                                            style:
-                                                                                TextStyle(fontSize: 20),
-                                                                          ),
-                                                                        )
+                                                                              MaterialButton(
+                                                                                onPressed: () {
+                                                                                  updateRequiredAmount(i, int.parse(_amountController.text));
+                                                                                  Navigator.of(context).pop();
+                                                                                },
+                                                                                color: Colors.blue,
+                                                                                textColor: Colors.white,
+                                                                                child: const Text(
+                                                                                  "Update",
+                                                                                  style: TextStyle(fontSize: 20),
+                                                                                ),
+                                                                              )
                                                                             ],
                                                                           ),
                                                                         );
                                                                       }),
-                                                                      
                                                                     );
                                                                   });
                                                             },
@@ -298,15 +340,78 @@ class _CartPageState extends State<CartPage> {
                           padding: const EdgeInsets.all(10),
                           width: double.infinity,
                           child: MaterialButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text("Confirm Order"),
+                                      //calculate the total price
+                                      content: SizedBox(
+                                        height: 100,
+                                        child: Column(
+                                          children: [
+                                            const Text(
+                                              "Buy the products in your cart ",
+                                              style: TextStyle(fontSize: 20),
+                                            ),
+                                            Text(
+                                              "$totalPrice\$",
+                                              style: const TextStyle(
+                                                  fontSize: 35,
+                                                  color: Colors.blue),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      actions: [
+                                        MaterialButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          color: Colors.red,
+                                          textColor: Colors.white,
+                                          child: const Text(
+                                            "cancel",
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                        ),
+                                        MaterialButton(
+                                          onPressed: () {
+                                            buyCartProducts(cartProducts,
+                                                totalPrice, context);
+                                          },
+                                          color: Colors.blue,
+                                          textColor: Colors.white,
+                                          child: const Text(
+                                            "Buy",
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            },
                             color: Colors.blue,
                             textColor: Colors.white,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5)),
-                            child:const Text(
-                             "Buy now",
-                             style: TextStyle(fontSize: 24),
-                                                            ),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Buy now",
+                                  style: TextStyle(fontSize: 24),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Icon(
+                                  Icons.shopping_cart_checkout,
+                                  size: 30,
+                                )
+                              ],
+                            ),
                           ),
                         )
                       ],
@@ -315,6 +420,4 @@ class _CartPageState extends State<CartPage> {
       ),
     );
   }
-
- 
 }

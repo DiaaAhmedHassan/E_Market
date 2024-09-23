@@ -169,4 +169,12 @@ class MarketUser {
     user.update({"imageUrl": newImage, "username": newUserName, "PhoneNumber": newPhoneNumber});
 
   }
+
+   emptyCart(){
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    FirebaseFirestore
+    .instance.collection("users")
+    .doc(userId)
+    .set({"cart": []}, SetOptions(merge: true));
+  }
 }

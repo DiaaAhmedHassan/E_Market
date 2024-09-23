@@ -1,5 +1,6 @@
 
 class Product {
+  final String _id;
   final String _title;
   double _price;
   final String _description;
@@ -9,6 +10,7 @@ class Product {
   final List _category;
 
   Product({
+    required String id, 
     required String title,
     required double price,
     required String description,
@@ -18,6 +20,8 @@ class Product {
     required List category,
 
   }):
+
+  _id = id,
   _title = title, 
   _price = price, 
   _description = description,
@@ -26,6 +30,7 @@ class Product {
   _imageUrl = imageUrl,
   _category = category;
 
+  String get id => _id;
   String get title => _title;
   double get price => _price;
   String get description => _description;
@@ -52,6 +57,7 @@ class Product {
 
   productToMap(){
     return {
+      "id": id,
       "title": _title, 
       "price": _price,
       "description": _description,
@@ -61,5 +67,6 @@ class Product {
       "category":_category
     };
   }
+
 
 }

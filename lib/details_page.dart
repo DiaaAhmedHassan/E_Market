@@ -29,6 +29,7 @@ class _ItemDetailsState extends State<ItemDetails> {
   void initState() {
     super.initState();
     print(widget.data.title);
+    print("init state details page");
     _amountController.text = '1';
   }
 
@@ -234,6 +235,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                         print("Function called");
 
                     product = CartProduct(
+                        id: widget.data.id,
                         title: widget.data.title,
                         price: widget.data.price,
                         description: widget.data.description,
@@ -245,6 +247,9 @@ class _ItemDetailsState extends State<ItemDetails> {
                         print("Conversion done");
                     addCurrentProductToCart(product);
                     print("product added");
+
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Product added to you cart succefully")));
+                    Navigator.of(context).pushReplacementNamed("cart_page");
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

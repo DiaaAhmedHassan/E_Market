@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_market/product.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CartProduct extends Product {
 
@@ -11,12 +13,14 @@ class CartProduct extends Product {
       required super.availableAmount,
       required super.imageUrl,
       required super.category, 
-      required int requiredAmount}): _requiredAmount = requiredAmount;
+      required int requiredAmount,
+       required super.id}): _requiredAmount = requiredAmount;
 
   int get requiredAmount => _requiredAmount;
 
   toMap() {
     return {
+      "id": id,
       "title": title,
       "price": price,
       "description": description,
@@ -30,6 +34,7 @@ class CartProduct extends Product {
 
   factory CartProduct.fromMap(Map<String, dynamic> data){
     return CartProduct(
+      id: data['id'],
       title: data['title'],
       price: data['price'],
       description: data['description'],
@@ -39,4 +44,8 @@ class CartProduct extends Product {
       category: data['category'], 
       requiredAmount: data['requiredAmount']);
   }
+
+
+ 
+ 
 }

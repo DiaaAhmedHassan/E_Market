@@ -285,7 +285,7 @@ class _HomePageState extends State<HomePage> {
                       onTap: () {
                         Navigator.of(context).pushNamed("cart_page");
                       },
-                      title: const Text("Cart"),
+                      title: const Text("Cart & orders"),
                       leading: const Icon(Icons.shopping_cart),
                     ),
                     ListTile(

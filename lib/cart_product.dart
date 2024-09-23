@@ -33,10 +33,17 @@ class CartProduct extends Product {
   }
 
   factory CartProduct.fromMap(Map<String, dynamic> data){
+
+    double price;
+    try{
+      price = data['price'];
+    }catch(e){
+      price = (data['price'] as int).toDouble();
+    }
     return CartProduct(
       id: data['id'],
       title: data['title'],
-      price: data['price'],
+      price: price,
       description: data['description'],
       rating: data['rating'], 
       availableAmount: data['availableAmount'],

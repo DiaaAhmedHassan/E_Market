@@ -199,6 +199,7 @@ class _ReviewsViewState extends State<ReviewsView> {
                                           ),
                                           validator: (val){
                                             if(val!.isEmpty) return "can't be empty";
+                                            return "";
                                           },
                                           onSaved: (val){
                                             updateController.text = val!;

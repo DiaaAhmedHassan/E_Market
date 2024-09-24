@@ -27,14 +27,21 @@ class _LogInState extends State<LogIn> {
     });
   }
 
-  signInUser() async {
+  signInUser(BuildContext context) async {
     var user = MarketUser(email: _emailController.text, password: _passwordController.text);
     bool isValidCredentials =await user.signIn();
     try{
     if(isValidCredentials){
       Navigator.pushReplacementNamed(context, 'home_page');
     }else{
-      print("Non valid cred =======");
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        title: 'Invalid credential',
+        desc: "Invalid email or password",
+        btnOkOnPress: (){}
+      
+      ).show();
     }
     }catch(e){
       print("Problem ==$e");
@@ -182,7 +189,7 @@ class _LogInState extends State<LogIn> {
                       onPressed: () {
                         loginFormKey.currentState!.save();
                         if(loginFormKey.currentState!.validate()){
-                          signInUser();   
+                          signInUser(context);   
                         }
                         
                       },

@@ -88,7 +88,7 @@ class _UserProfileState extends State<UserProfile> {
         }
 
         if(snapshot.connectionState == ConnectionState.done){
-          var user;
+          MarketUser user;
           Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
           user = MarketUser(email: FirebaseAuth.instance.currentUser!.email, imageUrl: userData['imageUrl'], name: userData['username'], phoneNumber: userData['PhoneNumber']);
         return Scaffold(
@@ -113,7 +113,7 @@ class _UserProfileState extends State<UserProfile> {
                             borderRadius: BorderRadius.circular(100),
                         
                           ),
-                          child:file == null? Image.network(user.imageUrl, width: 100, height: 100,fit: BoxFit.cover,):
+                          child:file == null? Image.network("${user.imageUrl}", width: 100, height: 100,fit: BoxFit.cover,):
                           photoUrl != null?
                           Image.network("${user.imageUrl}", width: 100, height: 100,fit: BoxFit.cover,):
                           Image.file(file!, width: 100, height: 100, fit: BoxFit.cover,)

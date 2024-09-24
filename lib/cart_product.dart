@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_market/product.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class CartProduct extends Product {
 

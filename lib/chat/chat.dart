@@ -14,7 +14,7 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
 
-  TextEditingController _messageController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
   bool _isDocumentExist = false;
 
   void sendMessage(){
@@ -102,7 +102,7 @@ class _ChatState extends State<Chat> {
         child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(child: Center(child: Text("No messages yet"))),
+          const Expanded(child: Center(child: Text("No messages yet"))),
           MessageInputField(
               messageController: _messageController,
               hintText: "Send message",

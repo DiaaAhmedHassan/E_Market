@@ -68,18 +68,18 @@ class _OrdersTabState extends State<OrdersTab> {
                   itemBuilder: (context, j){
                     return ListTile(
                       leading: Image.network(orderProducts[j].imageUrl),
-                      title: Text( "${orderProducts[j].requiredAmount}X ${orderProducts[j].title}", style: TextStyle(fontSize: 18),),
-                      trailing: Text("${orderProducts[j].requiredAmount * orderProducts[j].price} \$", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 16),),
+                      title: Text( "${orderProducts[j].requiredAmount}X ${orderProducts[j].title}", style: const TextStyle(fontSize: 18),),
+                      trailing: Text("${orderProducts[j].requiredAmount * orderProducts[j].price} \$", style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 16),),
                     );
                   },
                   
                 ),
                 )),
-              Text("Total price: ${orders[i]['totalPrice']} \$", style: TextStyle(fontSize: 18),),
+              Text("Total price: ${orders[i]['totalPrice']} \$", style: const TextStyle(fontSize: 18),),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Payment method: ${orders[i]['paymentMethod']}", style: TextStyle(fontSize: 18),),
+                  Text("Payment method: ${orders[i]['paymentMethod']}", style: const TextStyle(fontSize: 18),),
                   MaterialButton(
                     onPressed:isOrderCanBeCanceled? (){
                       AwesomeDialog(
@@ -100,11 +100,11 @@ class _OrdersTabState extends State<OrdersTab> {
                       
                     }: null,
                     disabledColor: Colors.grey,
-                    
-                   child: Text("cancel order", style: TextStyle(fontSize: 16),),
                    color: Colors.red,
                    textColor: Colors.white,
                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                    
+                   child: const Text("cancel order", style: TextStyle(fontSize: 16),),
                   )
                 ],
               )

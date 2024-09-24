@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_market/cart_product.dart';
+import 'package:e_market/home_page.dart';
 import 'package:e_market/reviews.dart';
 import 'package:e_market/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ItemDetails extends StatefulWidget {
@@ -19,12 +22,16 @@ class _ItemDetailsState extends State<ItemDetails> {
   TextEditingController _amountController = TextEditingController();
 
   int amount = 1;
+  int generalRating = 0;
 
   var product;
   addCurrentProductToCart(CartProduct product) {
     var user = MarketUser();
     user.addProductToCart(product);
   }
+
+ 
+  
 
   @override
   void initState() {
@@ -38,6 +45,11 @@ class _ItemDetailsState extends State<ItemDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(onPressed: (){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+            return const HomePage();
+          }));
+        }, icon:const Icon(Icons.arrow_back, color: Colors.blue,)),
         title: const Text("E market"),
       ),
       body: SingleChildScrollView(
@@ -105,7 +117,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                 child: InkWell(
                   onTap: (){
                     showModalBottomSheet(context: context, builder: (context){
-                      return ReviewsView();
+                      return ReviewsView(productId:  widget.data.id,);
                     });
                   },
                   child: Row(

@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget{
   Widget build(BuildContext context) {
     return  MaterialApp(
       theme: ThemeData(
-        tabBarTheme: TabBarTheme(labelColor: Colors.blue, indicatorColor: Colors.blue,),
+        tabBarTheme: const TabBarTheme(labelColor: Colors.blue, indicatorColor: Colors.blue,),
         fontFamily: 'Dosis',
         appBarTheme: const AppBarTheme(
           iconTheme: IconThemeData(color: Colors.blue),

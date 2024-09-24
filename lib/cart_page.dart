@@ -59,7 +59,7 @@ class _CartPageState extends State<CartPage> {
   void buyCartProducts(
       List<CartProduct> cartProducts, double totalPrice, BuildContext context) {
     String userId = FirebaseAuth.instance.currentUser!.uid;
-    var user;
+    MarketUser user;
     user = MarketUser();
     FirebaseFirestore.instance.collection("Orders").add({
       "userId": userId,
@@ -432,7 +432,7 @@ class _CartPageState extends State<CartPage> {
                   }),
             ),
 
-            OrdersTab()
+            const OrdersTab()
           ],
         ),
       ),

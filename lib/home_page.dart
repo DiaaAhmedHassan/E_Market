@@ -87,7 +87,9 @@ class _HomePageState extends State<HomePage> {
     if (snapshot.exists) {
       user = MarketUser(
           name: snapshot.get('username'), imageUrl: snapshot.get('imageUrl'));
+      if(mounted){
       setState(() {});
+      }
       return user;
     } else {
       print("No data found");
@@ -173,6 +175,14 @@ class _HomePageState extends State<HomePage> {
     scrollOffersAutomatically();
     getUserData();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollControl.dispose();
+    searchBarController.dispose();
+  
   }
 
 //app GUI starts here
@@ -412,7 +422,7 @@ class _HomePageState extends State<HomePage> {
                 (context, i) {
                   return InkWell(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => ItemDetails(

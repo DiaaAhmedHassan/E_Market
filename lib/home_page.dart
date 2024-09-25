@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
       products.add(Product(
           id: i.id,
           title: i.get('title'),
-          price: (i.get('price') as int).toDouble(),
+          price: (i.get('price') as num).toDouble(),
           description: i.get('description'),
           rating: i.get('rating'),
           availableAmount: i.get('availableAmount'),
@@ -214,6 +214,7 @@ class _HomePageState extends State<HomePage> {
               suffixIcon: IconButton(
                   onPressed: () async{
                     await searchProduct();
+                    FocusManager.instance.primaryFocus?.unfocus();
                   },
                   icon:isSearching? const Icon(
                     Icons.search,
@@ -432,7 +433,7 @@ class _HomePageState extends State<HomePage> {
                     },
                     child: ItemCard(
                         itemName: products[i].title,
-                        price: products[i].price,
+                        price: (products[i].price as num).toDouble(),
                         rating: products[i].rating,
                         imagePath: products[i].imageUrl),
                   );

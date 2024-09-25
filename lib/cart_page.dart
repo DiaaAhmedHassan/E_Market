@@ -57,7 +57,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   void buyCartProducts(
-      List<CartProduct> cartProducts, double totalPrice, BuildContext context) {
+    List<CartProduct> cartProducts, double totalPrice, BuildContext context) {
     String userId = FirebaseAuth.instance.currentUser!.uid;
     MarketUser user;
     user = MarketUser();
@@ -71,8 +71,17 @@ class _CartPageState extends State<CartPage> {
     });
 
     for (var product in cartProducts) {
+      if(product.requiredAmount<=product.availableAmount){
       FirebaseFirestore.instance.collection("products").doc(product.id).update(
           {"availableAmount": FieldValue.increment(-(product.requiredAmount))});
+      }else{
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          title: "Out of stock",
+          desc: "${product.title} available amount not enough").show();
+      }
+      break;
     }
 
     cartProducts.clear();
@@ -99,6 +108,9 @@ class _CartPageState extends State<CartPage> {
       child: Scaffold(
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.blue),
+          leading: IconButton(onPressed: (){
+            Navigator.of(context).pushNamedAndRemoveUntil("home_page", (route) => false);
+          }, icon: Icon(Icons.arrow_back)),
           title: const Row(
             children: [
               Text('Cart'),

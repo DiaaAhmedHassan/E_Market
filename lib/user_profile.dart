@@ -70,9 +70,9 @@ class _UserProfileState extends State<UserProfile> {
 
   void deleteUserAccount(user, BuildContext context) {
     FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).delete();
+    FirebaseFirestore.instance.collection("chat_rooms").doc(FirebaseAuth.instance.currentUser!.uid).delete();
     print("firestore data deleted");
     FirebaseAuth.instance.currentUser!.delete();
-    //user.signOut();
   }
   @override
   Widget build(BuildContext context) {

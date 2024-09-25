@@ -198,7 +198,7 @@ class _ReviewsViewState extends State<ReviewsView> {
                                           ),
                                           validator: (val){
                                             if(val!.isEmpty) return "can't be empty";
-                                            return "";
+                                            
                                           },
                                           onSaved: (val){
                                             updateController.text = val!;
@@ -216,6 +216,11 @@ class _ReviewsViewState extends State<ReviewsView> {
                                       doc(widget.productId).
                                       collection("reviews").
                                       doc(userId).delete();
+
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
+
+                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Your review has been deleted!"),behavior: SnackBarBehavior.floating,));
                                     }, 
                                     color: Colors.red,
                                     textColor: Colors.white,
@@ -223,8 +228,8 @@ class _ReviewsViewState extends State<ReviewsView> {
                                     child:const Text("Delete"),),
                                   MaterialButton(
                                     onPressed: (){
-                                      if(updateKey.currentState!.validate()){
                                         updateKey.currentState!.save();
+                                      if(updateKey.currentState!.validate()){
                                         FirebaseFirestore.
                                         instance.collection("products").
                                         doc(widget.productId).

@@ -1,6 +1,5 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_market/details_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -199,6 +198,7 @@ class _ReviewsViewState extends State<ReviewsView> {
                                           ),
                                           validator: (val){
                                             if(val!.isEmpty) return "can't be empty";
+                                            return "";
                                           },
                                           onSaved: (val){
                                             updateController.text = val!;

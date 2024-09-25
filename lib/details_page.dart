@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_market/cart_product.dart';
 import 'package:e_market/home_page.dart';
 import 'package:e_market/reviews.dart';
 import 'package:e_market/user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ItemDetails extends StatefulWidget {
@@ -252,7 +250,6 @@ class _ItemDetailsState extends State<ItemDetails> {
                   color: Colors.blue,
                   textColor: Colors.white,
                   onPressed: () {
-                        print("Function called");
 
                     product = CartProduct(
                         id: widget.data.id,
@@ -268,7 +265,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                     addCurrentProductToCart(product);
                     print("product added");
 
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Product added to you cart succefully")));
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Product added to you cart successfully")));
                     Navigator.of(context).pushReplacementNamed("cart_page");
                   },
                   child: const Row(
